@@ -230,7 +230,7 @@
       loi: dung ? "🎉 Chính xác! Bạn được thưởng." : "😅 Chưa đúng rồi. Xem giải thích nhé:",
       hieuUng: dung ? c.thuong : null,
       phieu: [c.phieu],
-      diaLi: c.giaiThich
+      diaLi: [c.giaiThich, c.diaLi].filter(Boolean).join(" ")
     });
   }
 
