@@ -513,9 +513,147 @@
   }
 
   /* =========================================================
+     MÀN 6: GIÁO VIÊN
+     ========================================================= */
+  function manGiaoVien() {
+    const V = ND.vung;
+    const xep = [...V].sort((a, b) => b.tn2024 - a.tn2024).map(v => v.id);
+    const dong = (n = 2) => `<div class="dong-ke"></div>`.repeat(n);
+
+    // Phiếu học tập (để in)
+    const bangPhieu = V.map(v => `<tr><td>${esc(v.ten)}</td><td>${so(v.tn2010)}</td><td>${so(v.tn2024)}</td><td></td><td></td></tr>`).join("");
+    const phieu = `
+      <section id="phieu-hoc-tap" class="phieu">
+        <h2>PHIẾU HỌC TẬP – BÀI 4</h2>
+        <p class="phieu-phu">Thực hành: Tìm hiểu vấn đề việc làm ở địa phương và phân hoá thu nhập theo vùng · Game "Tuổi 18 – Chọn đường mưu sinh"</p>
+        <p>Họ và tên: ……………………………………… Lớp: ………… Nhóm: …………</p>
+
+        <h3>Phần 1. Nhân vật của nhóm em</h3>
+        <p>Tên nhân vật: ………………… Vùng: ……………………………………………</p>
+        <p>Nghề cuối cùng: ………………………………… Thu nhập cuối game: ………… nghìn đồng/tháng</p>
+        <p>Một đặc điểm địa lí của vùng ảnh hưởng đến việc làm của nhân vật:</p>${dong(2)}
+
+        <h3>Phần 2. Xử lí bảng số liệu</h3>
+        <p class="phieu-phu">Thu nhập bình quân đầu người một tháng (giá hiện hành) phân theo vùng – đơn vị: nghìn đồng (Bảng 4 SGK)</p>
+        <table class="bang">
+          <thead><tr><th>Vùng</th><th>2010</th><th>2024</th><th>2024 so với 2010<br>(gấp … lần)</th><th>Xếp hạng<br>năm 2024</th></tr></thead>
+          <tbody>${bangPhieu}</tbody>
+        </table>
+
+        <h3>Phần 3. Nhận xét sự phân hoá thu nhập theo vùng</h3>
+        <p>a) Sự thay đổi thu nhập giai đoạn 2010 – 2024:</p>${dong(2)}
+        <p>b) Vùng cao nhất, thấp nhất năm 2010 và năm 2024; chênh lệch bao nhiêu lần:</p>${dong(3)}
+        <p>c) Kết luận và giải thích ngắn gọn:</p>${dong(3)}
+
+        <h3>Phần 4. Báo cáo vấn đề việc làm ở địa phương (Hà Nội)</h3>
+        <p>Thực trạng:</p>${dong(3)}
+        <p>Giải pháp:</p>${dong(3)}
+        <p>Ý nghĩa:</p>${dong(2)}
+      </section>`;
+
+    // Đáp án bảng số liệu
+    const bangDapAn = V.map(v => `<tr><td><b style="color:${v.mau}">${esc(v.ten)}</b></td><td>${so(v.tn2010)}</td><td>${so(v.tn2024)}</td><td>+${so(v.tn2024 - v.tn2010)}</td><td>${lan(v.tn2010, v.tn2024)}</td><td>${xep.indexOf(v.id) + 1}</td></tr>`).join("");
+
+    // Đáp án mọi câu hỏi chặn đường, lấy thẳng từ noi-dung.js
+    const cauHoi = ND.nhanVat.map(nv => {
+      const ds = nv.canh.filter(c => c.loai === "cauHoi");
+      if (!ds.length) return "";
+      return `<h4>${esc(nv.ten)} · ${esc(VUNG[nv.vung].ten)}</h4><ol>${ds.map(c => `
+        <li><b>${esc(c.cauHoi)}</b><br>✅ ${"ABCD"[c.dung]}. ${esc(c.dapAn[c.dung])}<br><span class="nho">${esc(c.giaiThich)}</span></li>`).join("")}</ol>`;
+    }).join("");
+
+    const soCanh = ND.nhanVat.reduce((t, n) => t + n.canh.length, 0);
+
+    $san.innerHTML = `
+      <section class="anh-bia" style="margin-bottom:16px">
+        <span class="nhan">👩‍🏫 Dành cho giáo viên</span>
+        <h1 style="font-size:clamp(28px,6vw,44px)">Góc giáo viên</h1>
+        <p>Gợi ý tổ chức tiết học, phiếu học tập in cho cả lớp và đáp án. Game hiện có ${ND.nhanVat.length} nhân vật, ${soCanh} cảnh.</p>
+      </section>
+
+      <article class="the">
+        <h2>⏱️ Gợi ý tổ chức tiết học (45 phút)</h2>
+        <table class="bang">
+          <thead><tr><th>Thời gian</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>5 phút</td><td><b>Khởi động.</b> Giới thiệu game, chia lớp thành 6 nhóm, mỗi nhóm nhận một nhân vật (một vùng). Phát phiếu học tập.</td></tr>
+            <tr><td>15 phút</td><td><b>Nhập vai.</b> Các nhóm chơi đường của nhân vật mình, thảo luận trước mỗi lựa chọn, ghi Phần 1 của phiếu. Nhóm <b>Minh</b> thu thập phiếu điều tra cho báo cáo Hà Nội.</td></tr>
+            <tr><td>10 phút</td><td><b>Đại hội 6 vùng</b> (Nhiệm vụ 2). Mỗi nhóm báo cáo nhanh nghề và thu nhập của nhân vật so với bình quân vùng. Cả lớp làm Thử thách 1–2 trên màn chiếu, hoàn thành Phần 2–3 của phiếu.</td></tr>
+            <tr><td>10 phút</td><td><b>Nhiệm vụ 1.</b> Nhóm Minh trình bày báo cáo việc làm Hà Nội; các nhóm khác bổ sung giải pháp. Hoàn thiện Phần 4 (có thể giao về nhà).</td></tr>
+            <tr><td>5 phút</td><td><b>Tổng kết.</b> Chốt: thu nhập mọi vùng đều tăng, chênh lệch thu hẹp nhưng còn lớn; phân biệt <i>bình quân đầu người</i> với <i>thu nhập cá nhân</i>, <i>tăng thêm</i> với <i>tăng gấp</i>.</td></tr>
+          </tbody>
+        </table>
+        <p class="ghi-chu" style="margin-top:10px">💡 Nếu chỉ có một máy chiếu: cả lớp cùng chơi một nhân vật, giáo viên cho học sinh giơ tay biểu quyết từng lựa chọn.</p>
+      </article>
+
+      <article class="the buoc">
+        <h2>🖨️ Phiếu học tập</h2>
+        <p style="margin-top:0">Bấm in để in riêng phiếu (khổ A4, không kèm đáp án). Có thể chọn "Lưu dưới dạng PDF" để gửi qua nhóm lớp.</p>
+        <div class="hang-nut"><button class="nut" id="in-phieu">🖨️ In phiếu học tập</button><button class="nut phu" id="xem-phieu">👀 Xem trước</button></div>
+        <div id="khung-phieu" hidden>${phieu}</div>
+      </article>
+
+      <article class="the buoc">
+        <h2>🔑 Đáp án</h2>
+        <p style="margin-top:0">Đáp án được ẩn để học sinh không nhìn thấy khi màn hình đang chiếu.</p>
+        <div class="hang-nut" style="margin-top:0"><button class="nut toi" id="mo-dap-an">🔓 Hiện đáp án</button></div>
+        <div id="dap-an" hidden>
+          <h3>Phần 2 – Xử lí bảng số liệu</h3>
+          <table class="bang">
+            <thead><tr><th>Vùng</th><th>2010</th><th>2024</th><th>Tăng thêm</th><th>Gấp (lần)</th><th>Hạng 2024</th></tr></thead>
+            <tbody>${bangDapAn}</tbody>
+          </table>
+          <h3>Phần 3 – Ý chính cần đạt</h3>
+          <ul>
+            <li>Giai đoạn 2010 – 2024, thu nhập của <b>tất cả</b> các vùng đều tăng; Bắc Trung Bộ tăng nhanh nhất (≈ 5,1 lần), Đông Nam Bộ tăng chậm nhất về số lần (≈ 3,1 lần) nhưng vẫn cao nhất.</li>
+            <li>Năm 2010: cao nhất Đông Nam Bộ (2.212), thấp nhất <b>Bắc Trung Bộ</b> (903), chênh ≈ 2,4 lần.</li>
+            <li>Năm 2024: cao nhất Đông Nam Bộ (6.868), thứ hai Đồng bằng sông Hồng (6.480); thấp nhất Trung du và miền núi phía Bắc (3.749), chênh ≈ 1,8 lần.</li>
+            <li>Kết luận: đời sống được cải thiện ở mọi vùng; chênh lệch thu hẹp nhưng vẫn rõ. Nguyên nhân: khác nhau về trình độ phát triển công nghiệp – dịch vụ, vốn đầu tư, hạ tầng, chất lượng lao động, điều kiện tự nhiên.</li>
+          </ul>
+          <h3>Câu hỏi chặn đường trong game</h3>
+          ${cauHoi}
+          <h3>Thử thách Đại hội 6 vùng</h3>
+          <p>Xếp hạng 2024: ${xep.map((id, i) => `${i + 1}. ${esc(VUNG[id].ten)}`).join(" · ")}</p>
+        </div>
+      </article>
+
+      <article class="the buoc">
+        <h2>🧹 Máy dùng chung</h2>
+        <p style="margin-top:0">Game lưu tiến độ (nhân vật đã chơi, phiếu điều tra) trên trình duyệt của từng máy. Trước khi lớp sau vào phòng máy, bấm nút dưới để xoá.</p>
+        <button class="nut phu" id="xoa-het">🗑️ Xoá toàn bộ tiến độ trên máy này</button>
+      </article>
+    `;
+
+    const $ = id => document.getElementById(id);
+    $("mo-dap-an").onclick = () => {
+      const an = $("dap-an").hidden;
+      $("dap-an").hidden = !an;
+      $("mo-dap-an").textContent = an ? "🔒 Ẩn đáp án" : "🔓 Hiện đáp án";
+    };
+    $("xem-phieu").onclick = () => {
+      const an = $("khung-phieu").hidden;
+      $("khung-phieu").hidden = !an;
+      $("xem-phieu").textContent = an ? "🙈 Ẩn bản xem trước" : "👀 Xem trước";
+    };
+    $("in-phieu").onclick = () => {
+      document.body.classList.add("dang-in-phieu");
+      $("khung-phieu").hidden = false;
+      setTimeout(() => window.print(), 50);
+    };
+    window.onafterprint = () => document.body.classList.remove("dang-in-phieu");
+    $("xoa-het").onclick = () => {
+      if (!confirm("Xoá toàn bộ tiến độ và phiếu điều tra trên máy này?")) return;
+      luu = { daChoi: {}, phieu: [] };
+      ghiLuu(luu);
+      thongBao("🧹 Đã xoá tiến độ");
+    };
+    lenDau();
+  }
+
+  /* =========================================================
      ĐIỀU HƯỚNG
      ========================================================= */
-  const MAN = { chon: manChon, baocao: manBaoCao, daihoi: manDaiHoi };
+  const MAN = { chon: manChon, baocao: manBaoCao, daihoi: manDaiHoi, giaovien: manGiaoVien };
   function den(ten) { (MAN[ten] || manChon)(); }
   function ganDieuHuong(goc) {
     goc.querySelectorAll("[data-den]").forEach(b => b.addEventListener("click", () => den(b.dataset.den)));

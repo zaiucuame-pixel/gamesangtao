@@ -251,7 +251,32 @@ main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
   .chan-dung { width: 64px; height: 64px; font-size: 34px; }
 }
 
+
+/* ---------- Góc giáo viên ---------- */
+.bang { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+.bang th, .bang td { border: 1px solid var(--vien); padding: 6px 8px; text-align: left; vertical-align: top; }
+.bang th { background: var(--navy); color: #fff; font-weight: 700; }
+.bang tbody tr:nth-child(even) { background: #fbf8f1; }
+#dap-an h3 { margin-top: 16px; }
+#dap-an h4 { margin: 12px 0 4px; }
+#dap-an li { margin: 6px 0; }
+.nho { font-size: 13px; color: var(--chu-nhat); }
+.phieu { background: #fff; border: 1px dashed var(--vien); border-radius: 12px; padding: 18px; margin-top: 12px; color: #000; }
+.phieu h2 { text-align: center; font-size: 22px; margin-bottom: 2px; }
+.phieu h3 { font-size: 16px; margin: 14px 0 4px; }
+.phieu p { margin: 6px 0; }
+.phieu-phu { font-size: 13px; color: #444; text-align: center; }
+.phieu .bang th { background: #eee; color: #000; }
+.phieu .bang td, .phieu .bang th { border-color: #999; }
+.dong-ke { border-bottom: 1px dotted #888; height: 26px; }
+
 @media print {
+  body.dang-in-phieu main > *:not(.buoc) , body.dang-in-phieu .buoc > *:not(#khung-phieu) { display: none !important; }
+  body.dang-in-phieu .buoc:not(:has(#khung-phieu)) { display: none !important; }
+  body.dang-in-phieu .the { padding: 0; }
+  body.dang-in-phieu .phieu { border: 0; padding: 0; margin: 0; }
+  @page { size: A4; margin: 14mm; }
+
   .dau-trang, .chan-trang, .hang-nut, .thong-bao { display: none !important; }
   body { background: #fff; }
   .the { box-shadow: none; border: 0; }
