@@ -29,7 +29,7 @@ window.NOI_DUNG = {
 
     /* ===================== MINH – HÀ NỘI (đường chính, Nhiệm vụ 1) ===================== */
     {
-      id: "minh", ten: "Minh", emoji: "🧑‍💻", anh: "hinh/minh.png", nen: "hinh/nen-dbsh.png",
+      id: "minh", ten: "Minh", emoji: "🧑‍💻", anh: "hinh/minh.webp", nen: "hinh/nen-dbsh.webp",
       vung: "DBSH", que: "Hà Nội",
       chinh: true,
       gioiThieu: "Minh vừa thi xong lớp 12 ở Hà Nội – thủ đô, trung tâm kinh tế lớn nhất vùng Đồng bằng sông Hồng. Việc làm nhiều, nhưng người tìm việc cũng rất đông. Đi đường của Minh, bạn sẽ nhặt các 📋 phiếu điều tra để viết báo cáo việc làm ở Hà Nội.",
@@ -117,7 +117,7 @@ window.NOI_DUNG = {
 
     /* ===================== A PÁO – TRUNG DU VÀ MIỀN NÚI PHÍA BẮC ===================== */
     {
-      id: "apao", ten: "A Páo", emoji: "🧑‍🌾", anh: "hinh/apao.png", nen: "hinh/nen-tdmn.png",
+      id: "apao", ten: "A Páo", emoji: "🧑‍🌾", anh: "hinh/apao.webp", nen: "hinh/nen-tdmn.webp",
       vung: "TDMN", que: "Vùng cao Đồng Văn (Hà Giang cũ, nay thuộc Tuyên Quang)",
       gioiThieu: "A Páo là người Mông, vừa học xong lớp 12 ở trường phổ thông dân tộc nội trú. Quê em có cao nguyên đá hùng vĩ, nhưng đường sá khó đi và ít nhà máy.",
       batDau: { thuNhap: 2500, tayNghe: 20, gan: 80 },
@@ -162,7 +162,7 @@ window.NOI_DUNG = {
 
     /* ===================== LAN – BẮC TRUNG BỘ ===================== */
     {
-      id: "lan", ten: "Lan", emoji: "👩‍🔧", anh: "hinh/lan.png", nen: "hinh/nen-btb.png",
+      id: "lan", ten: "Lan", emoji: "👩‍🔧", anh: "hinh/lan.webp", nen: "hinh/nen-btb.webp",
       vung: "BTB", que: "Nghệ An",
       gioiThieu: "Lan lớn lên ở một làng ven biển Nghệ An. Quê Lan nắng gió, hay có bão, nhưng mấy năm gần đây các khu kinh tế ven biển mọc lên, mở ra nhiều cơ hội mới.",
       batDau: { thuNhap: 3000, tayNghe: 20, gan: 70 },
@@ -202,7 +202,7 @@ window.NOI_DUNG = {
 
     /* ===================== H'HEN – DUYÊN HẢI NAM TRUNG BỘ VÀ TÂY NGUYÊN ===================== */
     {
-      id: "hhen", ten: "H'Hen", emoji: "👩‍🌾", anh: "hinh/hhen.png", nen: "hinh/nen-tn.png",
+      id: "hhen", ten: "H'Hen", emoji: "👩‍🌾", anh: "hinh/hhen.webp", nen: "hinh/nen-tn.webp",
       vung: "NTBTN", que: "Đắk Lắk",
       gioiThieu: "H'Hen là người Ê Đê, nhà có vườn cà phê trên đất đỏ badan. Từ buôn của H'Hen đi xuống biển Nam Trung Bộ cũng không quá xa.",
       batDau: { thuNhap: 2800, tayNghe: 20, gan: 75 },
@@ -247,7 +247,7 @@ window.NOI_DUNG = {
 
     /* ===================== TUẤN – ĐÔNG NAM BỘ ===================== */
     {
-      id: "tuan", ten: "Tuấn", emoji: "👷", anh: "hinh/tuan.png", nen: "hinh/nen-dnb.png",
+      id: "tuan", ten: "Tuấn", emoji: "👷", anh: "hinh/tuan.webp", nen: "hinh/nen-dnb.webp",
       vung: "DNB", que: "Thủ Dầu Một (Bình Dương cũ, nay thuộc TP. Hồ Chí Minh)",
       gioiThieu: "Tuấn sống giữa vùng có nhiều khu công nghiệp nhất cả nước. Xung quanh nhà là nhà máy, dãy trọ của công nhân từ khắp nơi đến.",
       batDau: { thuNhap: 3500, tayNghe: 20, gan: 50 },
@@ -292,7 +292,7 @@ window.NOI_DUNG = {
 
     /* ===================== ÚT – ĐỒNG BẰNG SÔNG CỬU LONG ===================== */
     {
-      id: "ut", ten: "Út", emoji: "🚣‍♀️", anh: "hinh/ut.png", nen: "hinh/nen-dbscl.png",
+      id: "ut", ten: "Út", emoji: "🚣‍♀️", anh: "hinh/ut.webp", nen: "hinh/nen-dbscl.webp",
       vung: "DBSCL", que: "Cà Mau",
       gioiThieu: "Út lớn lên bên sông rạch, rừng đước và những cánh đồng lúa – tôm của Cà Mau, mũi đất cực Nam của Tổ quốc.",
       batDau: { thuNhap: 2800, tayNghe: 20, gan: 75 },

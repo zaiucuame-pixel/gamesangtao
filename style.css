@@ -142,6 +142,7 @@ main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
   background-size: cover; background-position: center;
   color: #fff;
 }
+.canh-dau.co-anh { min-height: 190px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; }
 .canh-dau.co-anh::before {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(10,18,48,.15), rgba(10,18,48,.78));
