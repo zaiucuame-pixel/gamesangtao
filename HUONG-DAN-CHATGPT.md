@@ -1,0 +1,66 @@
+# Hướng dẫn phối hợp Claude + ChatGPT
+
+Game được chia làm 2 phần tách biệt:
+
+| File | Chứa gì | Ai sửa |
+|---|---|---|
+| `noi-dung.js` | Toàn bộ nhân vật, tình huống, Góc Địa lí, câu hỏi, số liệu SGK | Ai cũng được (Claude, ChatGPT, bạn) |
+| `game.js`, `style.css`, `index.html` | Code chạy game, giao diện | Nên để một bên (Claude) lo, tránh hai AI cùng sửa |
+| `hinh/` | Ảnh nhân vật và ảnh nền | ChatGPT vẽ, bạn tải lên |
+
+## 1. Thêm hình
+
+Đặt ảnh vào thư mục `hinh/` với **đúng tên** sau. Chưa có ảnh thì game tự hiện emoji, không bị lỗi.
+
+- Chân dung (khung vuông): `apao.png`, `minh.png`, `lan.png`, `hhen.png`, `tuan.png`, `ut.png`
+- Ảnh nền (khung ngang 16:9): `nen-tdmn.png`, `nen-dbsh.png`, `nen-btb.png`, `nen-tn.png`, `nen-dnb.png`, `nen-dbscl.png`
+
+Nên nén ảnh cho nhẹ (dưới 300 KB mỗi ảnh), ví dụ bằng tinypng.com.
+
+## 2. Thêm tình huống
+
+Mỗi nhân vật trong `noi-dung.js` có mảng `canh: [ ... ]`. Thêm cảnh mới vào mảng đó theo một trong 3 mẫu:
+
+```js
+// Cảnh lựa chọn
+{
+  loai: "chon", nam: 4,
+  tieuDe: "Tiêu đề ngắn",
+  moTa: "2–3 câu tình huống",
+  luaChon: [
+    { chu: "Lựa chọn 1", ketQua: "Kết quả", hieuUng: { thuNhap: 800, tayNghe: 10, gan: -5 }, nghe: "Tên nghề mới (không bắt buộc)" },
+    { chu: "Lựa chọn 2", ketQua: "Kết quả", hieuUng: { thuNhap: 300, tayNghe: 5, gan: 10 } }
+  ],
+  diaLi: "Góc Địa lí: giải thích bằng kiến thức Địa 9"
+}
+
+// Câu hỏi chặn đường
+{
+  loai: "cauHoi", nam: 4,
+  tieuDe: "❓ Câu hỏi chặn đường",
+  cauHoi: "Câu hỏi?",
+  dapAn: ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+  dung: 0,              // vị trí đáp án đúng, đếm từ 0
+  giaiThich: "Giải thích",
+  thuong: { thuNhap: 300, tayNghe: 5 }
+}
+
+// Bản tin (chỉ đọc)
+{ loai: "tin", nam: 6, tieuDe: "📰 Bản tin", moTa: "Nội dung tin", diaLi: "Giải thích" }
+```
+
+Quy ước:
+- `thuNhap`: nghìn đồng/tháng cộng thêm (âm là giảm).
+- `tayNghe`, `gan` (gắn bó quê hương): từ -20 đến +20.
+- Riêng đường của **Minh**, có thể thêm `phieu: { loai: "thucTrang" | "giaiPhap" | "yNghia", chu: "..." }` vào cảnh, hoặc `phieuThem` vào lựa chọn. Phiếu sẽ tự vào báo cáo việc làm Hà Nội.
+
+## 3. Đoạn prompt mẫu cho ChatGPT
+
+> Đây là định dạng tình huống trong game của mình (dán mẫu ở mục 2). Hãy viết thêm 2 cảnh "chon" cho nhân vật **[tên]** ở vùng **[vùng]**, năm 3 và năm 4, dựa trên đặc điểm địa lí thật của vùng. Không bịa số liệu. Chỉ trả về code JavaScript, không giải thích.
+
+Sau đó gửi kết quả về cho Claude soát lại trước khi ghép vào.
+
+## 4. Lưu ý quan trọng
+
+- Số liệu trong `vung: [...]` lấy từ **Bảng 4 SGK**. Đừng để AI tự đổi số này.
+- Mỗi lần nhờ AI sửa, hãy gửi bản **mới nhất** từ GitHub, tránh ghi đè lên phần bên kia vừa làm.

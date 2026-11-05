@@ -1,0 +1,527 @@
+/* =========================================================
+   TUỔI 18 – CHỌN ĐƯỜNG MƯU SINH · game.js
+   Logic game. Nội dung nằm trong noi-dung.js.
+   ========================================================= */
+(function () {
+  "use strict";
+
+  const ND = window.NOI_DUNG;
+  const VUNG = Object.fromEntries(ND.vung.map(v => [v.id, v]));
+  const $san = document.getElementById("san-khau");
+  const KHOA = "gamesangtao-v1";
+
+  /* ---------- tiện ích ---------- */
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const so = n => Math.round(n).toLocaleString("vi-VN");
+  const lan = (a, b) => (b / a).toLocaleString("vi-VN", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  const kep = (x, a, b) => Math.max(a, Math.min(b, x));
+  const lenDau = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  function docLuu() {
+    try { return JSON.parse(localStorage.getItem(KHOA)) || {}; } catch (e) { return {}; }
+  }
+  function ghiLuu(d) {
+    try { localStorage.setItem(KHOA, JSON.stringify(d)); } catch (e) { /* bỏ qua */ }
+  }
+  let luu = Object.assign({ daChoi: {}, phieu: [] }, docLuu());
+
+  let tbHen;
+  function thongBao(chu) {
+    const el = document.getElementById("thong-bao");
+    el.textContent = chu;
+    el.classList.add("hien");
+    clearTimeout(tbHen);
+    tbHen = setTimeout(() => el.classList.remove("hien"), 2600);
+  }
+
+  function chanDung(nv, co = "") {
+    const v = VUNG[nv.vung];
+    const anh = nv.anh ? `<img src="${esc(nv.anh)}" alt="${esc(nv.ten)}" onerror="this.replaceWith(document.createTextNode('${nv.emoji}'))">` : nv.emoji;
+    return `<div class="chan-dung ${co}" style="--mau-vung:${v.mau}">${anh}</div>`;
+  }
+
+  // Thử tải ảnh nền; có thì gắn vào phần đầu cảnh
+  function ganNen(el, url) {
+    if (!url || !el) return;
+    const img = new Image();
+    img.onload = () => { el.style.backgroundImage = `url("${url}")`; el.classList.add("co-anh"); };
+    img.src = url;
+  }
+
+  /* =========================================================
+     MÀN 1: CHỌN NHÂN VẬT
+     ========================================================= */
+  function manChon() {
+    const daiMau = ND.vung.map(v => `<span style="background:${v.mau}"></span>`).join("");
+    const the = ND.nhanVat.map(nv => {
+      const v = VUNG[nv.vung];
+      const xong = luu.daChoi[nv.id];
+      const huy = xong ? `<span class="huy-hieu xong">✔ Đã chơi</span>` : (nv.chinh ? `<span class="huy-hieu">⭐ Nhiệm vụ 1</span>` : "");
+      return `
+        <button class="the-nv ${nv.chinh ? "chinh" : ""}" style="--mau-vung:${v.mau}" data-nv="${nv.id}">
+          ${huy}
+          ${chanDung(nv)}
+          <div>
+            <div class="vung">${esc(v.ten)}</div>
+            <h3>${esc(nv.ten)}</h3>
+            <div class="que">📍 ${esc(nv.que)}</div>
+            ${nv.chinh ? `<p style="margin:6px 0 0;font-size:14px">${esc(nv.gioiThieu)}</p>` : ""}
+          </div>
+        </button>`;
+    }).join("");
+
+    const soDaChoi = Object.keys(luu.daChoi).length;
+    $san.innerHTML = `
+      <section class="anh-bia">
+        <span class="nhan">📚 Địa lí 9 · Bài 4 · Thực hành</span>
+        <h1>Tuổi 18 – Chọn đường mưu sinh</h1>
+        <p>Bạn vừa 18 tuổi. Mỗi năm là một ngã rẽ về việc làm. Hãy sống thử cuộc đời của một bạn trẻ ở một trong <b>6 vùng</b> của nước ta – và tự khám phá vì sao thu nhập mỗi vùng lại khác nhau.</p>
+        <p style="font-size:14px;opacity:.85">Đã trải nghiệm: <b>${soDaChoi}/6</b> nhân vật${soDaChoi ? " · Mở <b>🏆 Đại hội 6 vùng</b> để so sánh!" : ""}</p>
+        <div class="dai-mau">${daiMau}</div>
+      </section>
+      <h2>🎭 Chọn nhân vật</h2>
+      <div class="luoi-nv">${the}</div>
+    `;
+    $san.querySelectorAll("[data-nv]").forEach(b => b.addEventListener("click", () => batDau(b.dataset.nv)));
+  }
+
+  /* =========================================================
+     MÀN 2: CHƠI
+     ========================================================= */
+  let tt = null; // trạng thái lượt chơi
+
+  function batDau(id) {
+    const nv = ND.nhanVat.find(n => n.id === id);
+    tt = {
+      nv,
+      v: VUNG[nv.vung],
+      buoc: -1,
+      thuNhap: nv.batDau.thuNhap,
+      tayNghe: nv.batDau.tayNghe,
+      gan: nv.batDau.gan,
+      nghe: "",
+      phieu: [],
+      dungCau: 0, tongCau: 0
+    };
+    manGioiThieu();
+  }
+
+  function manGioiThieu() {
+    const { nv, v } = tt;
+    $san.innerHTML = `
+      <article class="the canh" style="--mau-vung:${v.mau}">
+        <div class="canh-dau" id="dau-canh">
+          <span class="nam">${esc(v.ten)}</span>
+          <h2>Xin chào, mình là ${esc(nv.ten)}!</h2>
+        </div>
+        <div class="canh-than" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center">
+          ${chanDung(nv, "lon")}
+          <div>
+            <p class="mo-ta" style="margin:0">${esc(nv.gioiThieu)}</p>
+            <p style="font-size:14px;color:var(--chu-nhat);margin:8px 0 0">📍 Quê: ${esc(nv.que)}<br>📊 Thu nhập bình quân đầu người của vùng năm 2024 (SGK): <b>${so(v.tn2024)} nghìn đồng/tháng</b></p>
+          </div>
+        </div>
+        <div class="canh-than" style="padding-top:0">
+          <button class="nut" id="nut-di">Bắt đầu năm thứ nhất →</button>
+        </div>
+      </article>`;
+    ganNen(document.getElementById("dau-canh"), nv.nen);
+    document.getElementById("nut-di").onclick = canhTiep;
+    lenDau();
+  }
+
+  function hud() {
+    const { nv, v } = tt;
+    const coPhieu = nv.chinh;
+    return `
+      <div class="hud" style="--mau-vung:${v.mau}">
+        ${chanDung(nv, "nho")}
+        <div>
+          <div class="ten">${esc(nv.ten)}</div>
+          <div class="vung">${esc(v.ten)}${tt.nghe ? " · " + esc(tt.nghe) : ""}</div>
+        </div>
+        <div class="chi-so">
+          <div class="o"><div class="nhan">💰 Thu nhập (nghìn đ/tháng)</div><div class="so" id="cs-tn">${so(tt.thuNhap)}</div></div>
+          <div class="o"><div class="nhan">🎓 Tay nghề</div><div class="so" id="cs-tay">${tt.tayNghe}</div><div class="thanh"><i style="width:${tt.tayNghe}%"></i></div></div>
+          <div class="o"><div class="nhan">🏡 Gắn bó quê hương</div><div class="so" id="cs-gan">${tt.gan}</div><div class="thanh"><i style="width:${tt.gan}%"></i></div></div>
+          ${coPhieu ? `<div class="o"><div class="nhan">📋 Phiếu điều tra</div><div class="so">${tt.phieu.length}</div></div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  function tienDo() {
+    const n = tt.nv.canh.length;
+    let s = "";
+    for (let i = 0; i < n; i++) s += `<span class="${i < tt.buoc ? "xong" : i === tt.buoc ? "dang" : ""}"></span>`;
+    return `<div class="tien-do" style="--mau-vung:${tt.v.mau}">${s}</div>`;
+  }
+
+  function canhTiep() {
+    tt.buoc++;
+    if (tt.buoc >= tt.nv.canh.length) return manKetThuc();
+    const c = tt.nv.canh[tt.buoc];
+    const tongNam = Math.max(...tt.nv.canh.map(x => x.nam || 1));
+
+    let than = "";
+    if (c.loai === "chon") {
+      than = `<div class="luoi-chon">${c.luaChon.map((l, i) => `<button class="lua-chon" data-i="${i}">${esc(l.chu)}</button>`).join("")}</div>`;
+    } else if (c.loai === "cauHoi") {
+      than = `<p class="mo-ta"><b>${esc(c.cauHoi)}</b></p>
+        <div class="luoi-chon">${c.dapAn.map((d, i) => `<button class="lua-chon" data-i="${i}">${"ABCD"[i]}. ${esc(d)}</button>`).join("")}</div>`;
+    } else {
+      than = `<button class="nut toi" id="nut-ghi">${tt.nv.chinh ? "📋 Ghi vào sổ điều tra" : "Đọc xong"}</button>`;
+    }
+
+    $san.innerHTML = `
+      ${hud()}
+      ${tienDo()}
+      <article class="the canh" style="--mau-vung:${tt.v.mau}">
+        <div class="canh-dau" id="dau-canh">
+          <span class="nam">Năm ${c.nam || tt.buoc + 1}/${tongNam}</span>
+          <h2>${esc(c.tieuDe)}</h2>
+        </div>
+        <div class="canh-than">
+          ${c.moTa ? `<p class="mo-ta">${esc(c.moTa)}</p>` : ""}
+          ${than}
+          <div id="ket-qua"></div>
+        </div>
+      </article>`;
+    ganNen(document.getElementById("dau-canh"), tt.nv.nen);
+
+    if (c.loai === "chon") {
+      $san.querySelectorAll(".lua-chon").forEach(b => b.onclick = () => chon(c, +b.dataset.i));
+    } else if (c.loai === "cauHoi") {
+      $san.querySelectorAll(".lua-chon").forEach(b => b.onclick = () => traLoi(c, +b.dataset.i));
+    } else {
+      document.getElementById("nut-ghi").onclick = () => {
+        document.getElementById("nut-ghi").remove();
+        hienKetQua({ loi: "", hieuUng: null, phieu: [c.phieu], diaLi: c.diaLi });
+      };
+    }
+    lenDau();
+  }
+
+  function apDung(hu) {
+    if (!hu) return;
+    tt.thuNhap = Math.max(0, tt.thuNhap + (hu.thuNhap || 0));
+    tt.tayNghe = kep(tt.tayNghe + (hu.tayNghe || 0), 0, 100);
+    tt.gan = kep(tt.gan + (hu.gan || 0), 0, 100);
+  }
+
+  function chon(c, i) {
+    const l = c.luaChon[i];
+    $san.querySelectorAll(".lua-chon").forEach((b, j) => { b.disabled = true; if (j === i) b.classList.add("da-chon"); });
+    apDung(l.hieuUng);
+    if (l.nghe) tt.nghe = l.nghe;
+    hienKetQua({ loi: l.ketQua, hieuUng: l.hieuUng, phieu: [c.phieu, l.phieuThem], diaLi: l.diaLi || c.diaLi });
+  }
+
+  function traLoi(c, i) {
+    const dung = i === c.dung;
+    tt.tongCau++;
+    if (dung) tt.dungCau++;
+    $san.querySelectorAll(".lua-chon").forEach((b, j) => {
+      b.disabled = true;
+      if (j === c.dung) b.classList.add("dung");
+      else if (j === i) b.classList.add("sai");
+    });
+    if (dung) apDung(c.thuong);
+    hienKetQua({
+      loi: dung ? "🎉 Chính xác! Bạn được thưởng." : "😅 Chưa đúng rồi. Xem giải thích nhé:",
+      hieuUng: dung ? c.thuong : null,
+      phieu: [c.phieu],
+      diaLi: c.giaiThich
+    });
+  }
+
+  function chipHieuUng(hu) {
+    if (!hu) return "";
+    const ds = [];
+    const them = (gt, ten) => { if (gt) ds.push(`<span class="chip ${gt > 0 ? "cong" : "tru"}">${gt > 0 ? "+" : ""}${so(gt)} ${ten}</span>`); };
+    them(hu.thuNhap, "💰");
+    them(hu.tayNghe, "🎓");
+    them(hu.gan, "🏡");
+    return ds.length ? `<div class="chip-hang">${ds.join("")}</div>` : "";
+  }
+
+  function hienKetQua({ loi, hieuUng, phieu, diaLi }) {
+    const moi = (phieu || []).filter(Boolean);
+    moi.forEach(p => tt.phieu.push(p));
+    const phieuHtml = (tt.nv.chinh && moi.length)
+      ? moi.map(p => `<div class="phieu-moi"><b>📋 Phiếu điều tra mới – ${tenLoaiPhieu(p.loai)}:</b> ${esc(p.chu)}</div>`).join("")
+      : "";
+    const laCuoi = tt.buoc >= tt.nv.canh.length - 1;
+    document.getElementById("ket-qua").innerHTML = `
+      <div class="ket-qua">
+        ${loi ? `<p class="loi">${esc(loi)}</p>` : ""}
+        ${chipHieuUng(hieuUng)}
+        ${diaLi ? `<div class="goc-dia-li"><b>📍 Góc Địa lí:</b> ${esc(diaLi)}</div>` : ""}
+        ${phieuHtml}
+        <div class="hang-nut"><button class="nut" id="nut-tiep">${laCuoi ? "Xem hồ sơ cuộc đời 🏁" : "Năm tiếp theo →"}</button></div>
+      </div>`;
+    if (moi.length && tt.nv.chinh) thongBao(`📋 Nhận ${moi.length} phiếu điều tra!`);
+    // cập nhật HUD
+    const thay = (id, gt) => { const el = document.getElementById(id); if (el && el.textContent !== String(gt)) { el.textContent = gt; el.classList.remove("nhay"); void el.offsetWidth; el.classList.add("nhay"); } };
+    thay("cs-tn", so(tt.thuNhap)); thay("cs-tay", tt.tayNghe); thay("cs-gan", tt.gan);
+    const thanh = $san.querySelectorAll(".hud .thanh i");
+    if (thanh[0]) thanh[0].style.width = tt.tayNghe + "%";
+    if (thanh[1]) thanh[1].style.width = tt.gan + "%";
+    document.getElementById("nut-tiep").onclick = canhTiep;
+    document.getElementById("ket-qua").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  const tenLoaiPhieu = l => ({ thucTrang: "Thực trạng", giaiPhap: "Giải pháp", yNghia: "Ý nghĩa" }[l] || "Ghi chú");
+
+  /* =========================================================
+     MÀN 3: HỒ SƠ CUỘC ĐỜI
+     ========================================================= */
+  function manKetThuc() {
+    const { nv, v } = tt;
+    const nghe = tt.nghe || "Lao động tự do";
+
+    luu.daChoi[nv.id] = { nghe, thuNhap: tt.thuNhap, tayNghe: tt.tayNghe, gan: tt.gan };
+    if (nv.chinh) {
+      // gộp phiếu, bỏ trùng
+      const da = new Set(luu.phieu.map(p => p.chu));
+      tt.phieu.forEach(p => { if (!da.has(p.chu)) { luu.phieu.push(p); da.add(p.chu); } });
+    }
+    ghiLuu(luu);
+
+    const tile = tt.thuNhap / v.tn2024;
+    const max = Math.max(tt.thuNhap, v.tn2024, ...ND.vung.map(x => x.tn2024));
+    const w = x => Math.max(8, (x / max) * 100) + "%";
+
+    let loiKet = [];
+    if (tt.tayNghe >= 60) loiKet.push("Tay nghề vững giúp " + nv.ten + " có việc làm ổn định và thu nhập tốt hơn.");
+    else if (tt.tayNghe < 35) loiKet.push(nv.ten + " có việc làm nhưng tay nghề chưa cao, dễ bị ảnh hưởng khi nhà máy đổi mới công nghệ hay thị trường biến động.");
+    if (tt.gan >= 75) loiKet.push(nv.ten + " gắn bó với quê hương, góp phần tạo việc làm và phát triển kinh tế tại chỗ.");
+    else if (tt.gan <= 45) loiKet.push(nv.ten + " đã đi xa quê để tìm việc – giống như rất nhiều lao động di cư đến những vùng có nhiều việc làm hơn.");
+    if (!loiKet.length) loiKet.push(nv.ten + " đã cân bằng giữa thu nhập, tay nghề và gia đình.");
+
+    $san.innerHTML = `
+      <article class="the ho-so" style="--mau-vung:${v.mau}">
+        ${chanDung(nv, "lon")}
+        <h2>Hồ sơ cuộc đời của ${esc(nv.ten)}</h2>
+        <div class="nghe">💼 ${esc(nghe)}</div>
+        <p>${esc(loiKet.join(" "))}</p>
+        ${tt.tongCau ? `<p>❓ Câu hỏi chặn đường: đúng <b>${tt.dungCau}/${tt.tongCau}</b></p>` : ""}
+
+        <div class="so-sanh">
+          <div class="dong"><span>💰 Thu nhập của ${esc(nv.ten)}</span><div class="cot" style="width:${w(tt.thuNhap)}">${so(tt.thuNhap)}</div></div>
+          <div class="dong"><span>📊 Bình quân đầu người<br><small>${esc(v.ten)} (2024)</small></span><div class="cot nhat" style="width:${w(v.tn2024)}">${so(v.tn2024)}</div></div>
+          <p class="ghi-chu">Đơn vị: nghìn đồng/tháng. Thu nhập của ${esc(nv.ten)} bằng khoảng <b>${tile.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} lần</b> mức bình quân đầu người của vùng.
+          <br>💡 Vì sao một người đi làm thường có thu nhập cao hơn mức "bình quân đầu người"? Vì khi tính bình quân, tổng thu nhập của hộ được chia cho <b>tất cả</b> thành viên, kể cả trẻ em, người già không đi làm.</p>
+        </div>
+
+        <div class="hang-nut" style="justify-content:center">
+          ${nv.chinh ? `<button class="nut toi" data-den="baocao">📋 Xem báo cáo việc làm Hà Nội</button>` : ""}
+          <button class="nut" data-den="daihoi">🏆 Đại hội 6 vùng</button>
+          <button class="nut phu" data-den="chon">🎭 Chơi nhân vật khác</button>
+        </div>
+      </article>`;
+    ganDieuHuong($san);
+    lenDau();
+  }
+
+  /* =========================================================
+     MÀN 4: BÁO CÁO VIỆC LÀM HÀ NỘI (Nhiệm vụ 1)
+     ========================================================= */
+  function manBaoCao() {
+    const ds = loai => luu.phieu.filter(p => p.loai === loai);
+    const muc = (tieuDe, loai) => {
+      const p = ds(loai);
+      return `<h3>${tieuDe}</h3>${p.length ? `<ul>${p.map(x => `<li>${esc(x.chu)}</li>`).join("")}</ul>` : `<p class="trong">Chưa có phiếu. Chơi đường của Minh để thu thập nhé!</p>`}`;
+    };
+    const minh = ND.nhanVat.find(n => n.chinh);
+    const chuaChoi = !luu.phieu.length;
+
+    $san.innerHTML = `
+      <article class="the bao-cao">
+        <h1>📋 Báo cáo: Vấn đề việc làm ở Hà Nội</h1>
+        <p style="color:var(--chu-nhat);margin-top:0">Nhiệm vụ 1 – Bài 4. Tổng hợp từ ${luu.phieu.length} phiếu điều tra thu thập trong hành trình của Minh.</p>
+        ${chuaChoi ? `<div class="phieu-moi">Bạn chưa có phiếu điều tra nào. Hãy đi đường của <b>Minh</b> để thu thập tư liệu cho báo cáo.</div>` : ""}
+        ${muc("1. Thực trạng", "thucTrang")}
+        ${muc("2. Giải pháp", "giaiPhap")}
+        ${muc("3. Ý nghĩa", "yNghia")}
+        <p class="ghi-chu" style="margin-top:18px">✍️ Gợi ý: đây là khung báo cáo. Em hãy viết lại bằng lời văn của mình, bổ sung số liệu từ Niên giám thống kê Hà Nội hoặc cổng thông tin của thành phố, và ghi rõ nguồn.</p>
+        <div class="hang-nut">
+          ${chuaChoi ? `<button class="nut" id="choi-minh">🧑‍💻 Đi đường của Minh</button>` : `
+          <button class="nut" id="nut-in">🖨️ In / Lưu PDF</button>
+          <button class="nut phu" id="nut-chep">📄 Sao chép nội dung</button>
+          <button class="nut phu" id="nut-xoa">🗑️ Xoá phiếu, làm lại</button>`}
+        </div>
+      </article>`;
+    const $ = id => document.getElementById(id);
+    if ($("choi-minh")) $("choi-minh").onclick = () => batDau(minh.id);
+    if ($("nut-in")) $("nut-in").onclick = () => window.print();
+    if ($("nut-chep")) $("nut-chep").onclick = () => {
+      const chu = ["BÁO CÁO: VẤN ĐỀ VIỆC LÀM Ở HÀ NỘI", ...[["1. Thực trạng", "thucTrang"], ["2. Giải pháp", "giaiPhap"], ["3. Ý nghĩa", "yNghia"]]
+        .map(([t, l]) => t + "\n" + ds(l).map(p => "- " + p.chu).join("\n"))].join("\n\n");
+      (navigator.clipboard ? navigator.clipboard.writeText(chu) : Promise.reject())
+        .then(() => thongBao("✅ Đã sao chép báo cáo"), () => thongBao("Không sao chép được, hãy bôi đen và copy thủ công"));
+    };
+    if ($("nut-xoa")) $("nut-xoa").onclick = () => {
+      if (!confirm("Xoá toàn bộ phiếu điều tra đã thu thập?")) return;
+      luu.phieu = []; ghiLuu(luu); manBaoCao();
+    };
+    lenDau();
+  }
+
+  /* =========================================================
+     MÀN 5: ĐẠI HỘI 6 VÙNG (Nhiệm vụ 2)
+     ========================================================= */
+  function manDaiHoi() {
+    const V = ND.vung;
+    const max = Math.max(...V.map(v => v.tn2024));
+    const nvCuaVung = id => ND.nhanVat.find(n => n.vung === id);
+
+    const bieuDo = V.map(v => {
+      const nv = nvCuaVung(v.id);
+      return `
+      <div class="bd-dong" style="--mau-vung:${v.mau}">
+        <div class="bd-ten">${nv ? chanDung(nv, "nho") : `<span class="cham" style="background:${v.mau}"></span>`}<span>${esc(v.ten)}<br><span class="bd-lan">tăng gấp ${lan(v.tn2010, v.tn2024)} lần</span></span></div>
+        <div class="bd-cot">
+          <div class="bd-thanh y2010" data-w="${(v.tn2010 / max) * 100}" style="width:0">${so(v.tn2010)}</div>
+          <div class="bd-thanh y2024" data-w="${(v.tn2024 / max) * 100}" style="width:0;background:${v.mau}">${so(v.tn2024)}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    const tuyChonVung = `<option value="">— chọn —</option>` + V.map(v => `<option value="${v.id}">${esc(v.ten)}</option>`).join("");
+    const sel = (id, opts) => `<select data-cau="${id}">${opts}</select>`;
+    const ops = arr => `<option value="">— chọn —</option>` + arr.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join("");
+
+    $san.innerHTML = `
+      <section class="anh-bia" style="margin-bottom:16px">
+        <span class="nhan">⭐ Nhiệm vụ 2</span>
+        <h1 style="font-size:clamp(28px,6vw,44px)">🏆 Đại hội 6 vùng</h1>
+        <p>6 nhân vật gặp nhau và so sánh thu nhập của vùng mình. Hãy đọc biểu đồ, xếp hạng và viết nhận xét về <b>sự phân hoá thu nhập theo vùng</b> ở nước ta.</p>
+      </section>
+
+      <article class="the">
+        <h2>📊 Thu nhập bình quân đầu người một tháng (giá hiện hành)</h2>
+        <p style="margin:0;color:var(--chu-nhat);font-size:14px">Đơn vị: nghìn đồng · Nguồn: ${esc(ND.nguonSoLieu)}</p>
+        <div class="chu-giai">
+          <span><i style="background:repeating-linear-gradient(45deg,#d9d2c2,#d9d2c2 4px,#e8e2d4 4px,#e8e2d4 8px)"></i>Năm 2010</span>
+          <span><i style="background:linear-gradient(90deg,${V.map(v => v.mau).join(",")})"></i>Năm 2024</span>
+        </div>
+        <div class="bieu-do">${bieuDo}</div>
+      </article>
+
+      <article class="the buoc">
+        <span class="buoc-so">Thử thách 1</span>
+        <h2>Xếp hạng năm 2024</h2>
+        <p style="margin-top:0">Bấm lần lượt các vùng theo thứ tự thu nhập năm 2024 <b>từ cao xuống thấp</b>. (Bấm lại để bỏ chọn.)</p>
+        <div class="luoi-xep" id="luoi-xep">
+          ${V.map(v => `<button class="nut-vung" style="--mau-vung:${v.mau}" data-v="${v.id}">${esc(v.ten)}</button>`).join("")}
+        </div>
+        <div class="hang-nut"><button class="nut" id="kiem-xep">Kiểm tra</button><button class="nut phu" id="lai-xep">Làm lại</button></div>
+        <div id="kq-xep"></div>
+      </article>
+
+      <article class="the buoc">
+        <span class="buoc-so">Thử thách 2</span>
+        <h2>Hoàn thành nhận xét</h2>
+        <p style="margin-top:0">Chọn từ thích hợp để hoàn thành bài nhận xét. Có thể dùng máy tính để chia: <i>số năm 2024 ÷ số năm 2010</i>.</p>
+        <div class="cau-nx">a) Từ năm 2010 đến năm 2024, thu nhập bình quân đầu người của <b>tất cả</b> các vùng đều ${sel("xuhuong", ops(["tăng", "giảm", "không thay đổi"]))}.</div>
+        <div class="cau-nx">b) Vùng có tốc độ tăng nhanh nhất là ${sel("nhanh", tuyChonVung)}, gấp khoảng ${sel("lannhanh", ops(["3,1 lần", "4,1 lần", "5,1 lần"]))}.</div>
+        <div class="cau-nx">c) Năm 2024, vùng có thu nhập cao nhất là ${sel("cao", tuyChonVung)}, thấp nhất là ${sel("thap", tuyChonVung)}.</div>
+        <div class="cau-nx">d) Năm 2010, vùng có thu nhập thấp nhất lại là ${sel("thap2010", tuyChonVung)}.</div>
+        <div class="cau-nx">e) Vùng cao nhất gấp vùng thấp nhất khoảng ${sel("chenh2010", ops(["1,8 lần", "2,4 lần", "3,5 lần"]))} năm 2010 và khoảng ${sel("chenh2024", ops(["1,8 lần", "2,4 lần", "3,5 lần"]))} năm 2024. Như vậy, chênh lệch thu nhập giữa các vùng đang ${sel("xuhuongchenh", ops(["thu hẹp dần", "ngày càng mở rộng"]))}, nhưng vẫn còn khá lớn.</div>
+        <div class="hang-nut"><button class="nut" id="kiem-nx">Chấm điểm</button></div>
+        <div id="kq-nx"></div>
+      </article>
+
+      <div class="hang-nut"><button class="nut phu" data-den="chon">🎭 Chơi nhân vật khác</button></div>
+    `;
+    ganDieuHuong($san);
+
+    // hoạt hình biểu đồ
+    requestAnimationFrame(() => setTimeout(() => {
+      $san.querySelectorAll(".bd-thanh").forEach(el => el.style.width = el.dataset.w + "%");
+    }, 60));
+
+    /* ---- Thử thách 1: xếp hạng ---- */
+    let thuTu = [];
+    const veXep = () => {
+      $san.querySelectorAll(".nut-vung").forEach(b => {
+        const k = thuTu.indexOf(b.dataset.v);
+        b.classList.toggle("da-xep", k >= 0);
+        const cu = b.querySelector(".thu-tu"); if (cu) cu.remove();
+        if (k >= 0) b.insertAdjacentHTML("beforeend", `<span class="thu-tu">${k + 1}</span>`);
+      });
+    };
+    $san.querySelectorAll(".nut-vung").forEach(b => b.onclick = () => {
+      const id = b.dataset.v;
+      thuTu = thuTu.includes(id) ? thuTu.filter(x => x !== id) : [...thuTu, id];
+      veXep();
+    });
+    document.getElementById("lai-xep").onclick = () => { thuTu = []; veXep(); document.getElementById("kq-xep").innerHTML = ""; };
+    document.getElementById("kiem-xep").onclick = () => {
+      if (thuTu.length < V.length) return thongBao("Hãy xếp đủ cả 6 vùng nhé!");
+      const dung = [...V].sort((a, b) => b.tn2024 - a.tn2024);
+      const diem = thuTu.filter((id, i) => dung[i].id === id).length;
+      document.getElementById("kq-xep").innerHTML = `
+        <p class="diem">${diem === 6 ? "🎉" : "🧐"} Đúng ${diem}/6 vị trí</p>
+        <ol>${dung.map(v => `<li><b style="color:${v.mau}">${esc(v.ten)}</b>: ${so(v.tn2024)} nghìn đồng</li>`).join("")}</ol>`;
+    };
+
+    /* ---- Thử thách 2: nhận xét ---- */
+    const caoNhat = (nam) => [...V].sort((a, b) => b[nam] - a[nam])[0];
+    const thapNhat = (nam) => [...V].sort((a, b) => a[nam] - b[nam])[0];
+    const nhanhNhat = [...V].sort((a, b) => b.tn2024 / b.tn2010 - a.tn2024 / a.tn2010)[0];
+    const c10 = caoNhat("tn2010"), t10 = thapNhat("tn2010"), c24 = caoNhat("tn2024"), t24 = thapNhat("tn2024");
+    const dapAn = {
+      xuhuong: "tăng",
+      nhanh: nhanhNhat.id,
+      lannhanh: lan(nhanhNhat.tn2010, nhanhNhat.tn2024) + " lần",
+      cao: c24.id,
+      thap: t24.id,
+      thap2010: t10.id,
+      chenh2010: lan(t10.tn2010, c10.tn2010) + " lần",
+      chenh2024: lan(t24.tn2024, c24.tn2024) + " lần",
+      xuhuongchenh: (c24.tn2024 / t24.tn2024) < (c10.tn2010 / t10.tn2010) ? "thu hẹp dần" : "ngày càng mở rộng"
+    };
+
+    document.getElementById("kiem-nx").onclick = () => {
+      let d = 0, tong = 0;
+      $san.querySelectorAll("select[data-cau]").forEach(s => {
+        tong++;
+        const ok = s.value === dapAn[s.dataset.cau];
+        if (ok) d++;
+        s.classList.toggle("dung", ok);
+        s.classList.toggle("sai", !ok);
+      });
+      const kq = document.getElementById("kq-nx");
+      kq.innerHTML = `<p class="diem">${d === tong ? "🏆" : "✍️"} ${d}/${tong} ô đúng</p>` + (d === tong ? nhanXetHoanChinh() : `<p>Ô viền đỏ là chưa đúng. Xem lại biểu đồ rồi chọn lại nhé!</p><button class="nut phu" id="xem-dap-an">Xem bài nhận xét mẫu</button>`);
+      const xem = document.getElementById("xem-dap-an");
+      if (xem) xem.onclick = () => { kq.insertAdjacentHTML("beforeend", nhanXetHoanChinh()); xem.remove(); };
+      if (d === tong) thongBao("🏆 Xuất sắc! Bạn đã hoàn thành Nhiệm vụ 2");
+    };
+
+    function nhanXetHoanChinh() {
+      const tang = [...V].map(v => `${v.ten} gấp ${lan(v.tn2010, v.tn2024)} lần`).join("; ");
+      return `
+      <div class="nx-hoan-chinh">
+        <b>📝 Nhận xét mẫu</b>
+        <p><b>1. Sự thay đổi 2010 – 2024:</b> Thu nhập bình quân đầu người một tháng của tất cả các vùng đều tăng nhanh (${tang}). ${esc(nhanhNhat.ten)} tăng nhanh nhất (từ ${so(nhanhNhat.tn2010)} lên ${so(nhanhNhat.tn2024)} nghìn đồng); ${esc(c24.ten)} tăng chậm nhất về số lần nhưng vẫn giữ vị trí cao nhất.</p>
+        <p><b>2. Sự phân hoá theo vùng:</b> Năm 2010, cao nhất là ${esc(c10.ten)} (${so(c10.tn2010)} nghìn đồng), thấp nhất là ${esc(t10.ten)} (${so(t10.tn2010)} nghìn đồng), chênh lệch khoảng ${lan(t10.tn2010, c10.tn2010)} lần. Năm 2024, cao nhất vẫn là ${esc(c24.ten)} (${so(c24.tn2024)} nghìn đồng), tiếp theo là Đồng bằng sông Hồng; thấp nhất là ${esc(t24.ten)} (${so(t24.tn2024)} nghìn đồng), chênh lệch khoảng ${lan(t24.tn2024, c24.tn2024)} lần.</p>
+        <p><b>3. Kết luận:</b> Thu nhập của người dân ở mọi vùng đều được cải thiện; khoảng cách giữa các vùng đã thu hẹp nhưng vẫn còn rõ rệt. Các vùng có công nghiệp, dịch vụ phát triển, thu hút nhiều vốn đầu tư (Đông Nam Bộ, Đồng bằng sông Hồng) có thu nhập cao; các vùng địa hình khó khăn, kinh tế dựa nhiều vào nông – lâm nghiệp, hay chịu thiên tai (Trung du và miền núi phía Bắc, Duyên hải Nam Trung Bộ và Tây Nguyên) có thu nhập thấp hơn.</p>
+      </div>`;
+    }
+    lenDau();
+  }
+
+  /* =========================================================
+     ĐIỀU HƯỚNG
+     ========================================================= */
+  const MAN = { chon: manChon, baocao: manBaoCao, daihoi: manDaiHoi };
+  function den(ten) { (MAN[ten] || manChon)(); }
+  function ganDieuHuong(goc) {
+    goc.querySelectorAll("[data-den]").forEach(b => b.addEventListener("click", () => den(b.dataset.den)));
+  }
+  ganDieuHuong(document.querySelector(".menu"));
+  document.getElementById("ve-trang-chu").onclick = () => den("chon");
+
+  manChon();
+})();

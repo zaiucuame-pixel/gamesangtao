@@ -1,0 +1,338 @@
+/* =========================================================
+   NỘI DUNG GAME "TUỔI 18 – CHỌN ĐƯỜNG MƯU SINH"
+   Địa lí 9 – Bài 4 (Kết nối tri thức)
+   ---------------------------------------------------------
+   File này CHỈ chứa nội dung. Muốn thêm/sửa tình huống thì
+   sửa ở đây, không cần đụng vào game.js.
+   Xem HUONG-DAN-CHATGPT.md để biết định dạng.
+   ========================================================= */
+
+window.NOI_DUNG = {
+
+  /* ---------- BẢNG 4 SGK: thu nhập bình quân đầu người/tháng (nghìn đồng) ---------- */
+  nguonSoLieu: "Bảng 4 SGK Lịch sử và Địa lí 9 (Kết nối tri thức) – Tính toán từ Kết quả khảo sát mức sống dân cư Việt Nam năm 2010 và năm 2024",
+  vung: [
+    { id: "TDMN",  ten: "Trung du và miền núi phía Bắc",          ngan: "TD&MN phía Bắc", mau: "#2e9e6b", tn2010: 907,  tn2024: 3749 },
+    { id: "DBSH",  ten: "Đồng bằng sông Hồng",                    ngan: "ĐB sông Hồng",   mau: "#e8463c", tn2010: 1561, tn2024: 6480 },
+    { id: "BTB",   ten: "Bắc Trung Bộ",                           ngan: "Bắc Trung Bộ",   mau: "#f08a24", tn2010: 903,  tn2024: 4630 },
+    { id: "NTBTN", ten: "Duyên hải Nam Trung Bộ và Tây Nguyên",   ngan: "DH NTB & T.Nguyên", mau: "#a0612f", tn2010: 1127, tn2024: 4360 },
+    { id: "DNB",   ten: "Đông Nam Bộ",                            ngan: "Đông Nam Bộ",    mau: "#2f6fde", tn2010: 2212, tn2024: 6868 },
+    { id: "DBSCL", ten: "Đồng bằng sông Cửu Long",                ngan: "ĐB sông Cửu Long", mau: "#12a3a8", tn2010: 1243, tn2024: 4770 }
+  ],
+
+  /* ---------- NHÂN VẬT ----------
+     thuNhap: thu nhập cá nhân, nghìn đồng/tháng
+     tayNghe, gan (gắn bó quê hương): thang 0–100
+     anh: đường dẫn ảnh (để trống thì hiện emoji)
+     nen: ảnh nền vùng (để trống thì dùng màu vùng)            */
+  nhanVat: [
+
+    /* ===================== MINH – HÀ NỘI (đường chính, Nhiệm vụ 1) ===================== */
+    {
+      id: "minh", ten: "Minh", emoji: "🧑‍💻", anh: "hinh/minh.png", nen: "hinh/nen-dbsh.png",
+      vung: "DBSH", que: "Hà Nội",
+      chinh: true,
+      gioiThieu: "Minh vừa thi xong lớp 12 ở Hà Nội – thủ đô, trung tâm kinh tế lớn nhất vùng Đồng bằng sông Hồng. Việc làm nhiều, nhưng người tìm việc cũng rất đông. Đi đường của Minh, bạn sẽ nhặt các 📋 phiếu điều tra để viết báo cáo việc làm ở Hà Nội.",
+      batDau: { thuNhap: 0, tayNghe: 20, gan: 70 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Ngã ba sau lớp 12",
+          moTa: "Bạn bè Minh gần như ai cũng nộp hồ sơ đại học. Nhưng chú hàng xóm làm ở khu công nghệ cao Hòa Lạc bảo: \"Công ty chú tuyển mãi không đủ thợ kĩ thuật giỏi!\". Minh chọn gì?",
+          phieu: { loai: "thucTrang", chu: "Nhiều thanh niên Hà Nội chọn học đại học, trong khi doanh nghiệp lại thiếu thợ kĩ thuật có tay nghề: cung và cầu lao động chưa khớp nhau." },
+          luaChon: [
+            { chu: "🎓 Thi đại học ngành Công nghệ thông tin", ketQua: "Minh đỗ đại học. 4 năm tới chưa có lương, nhưng nền tảng kiến thức rất vững.", hieuUng: { thuNhap: 0, tayNghe: 15, gan: 0 }, nghe: "Sinh viên Công nghệ thông tin" },
+            { chu: "🔧 Học cao đẳng nghề Cơ điện tử 2 năm", ketQua: "Vừa học vừa thực tập ở nhà máy, Minh có phụ cấp đầu tiên.", hieuUng: { thuNhap: 2500, tayNghe: 20, gan: 0 }, nghe: "Học viên nghề Cơ điện tử" },
+            { chu: "🛵 Đi làm giao hàng ngay để có tiền", ketQua: "Có thu nhập ngay, nhưng ngày nào cũng chạy 10 tiếng, không học thêm được gì.", hieuUng: { thuNhap: 7000, tayNghe: 0, gan: 0 }, nghe: "Nhân viên giao hàng" }
+          ],
+          diaLi: "Đồng bằng sông Hồng có lực lượng lao động đông và trình độ cao vào loại nhất cả nước. Tuy vậy, cơ cấu đào tạo còn lệch: thừa người học đại học ở một số ngành, nhưng thiếu công nhân kĩ thuật lành nghề."
+        },
+        {
+          loai: "chon", nam: 2,
+          tieuDe: "Ngày hội việc làm",
+          moTa: "Minh theo bạn đến một ngày hội việc làm do trung tâm dịch vụ việc làm của thành phố tổ chức. Hàng chục doanh nghiệp đặt bàn tuyển người, có cả gian tư vấn đi làm việc ở nước ngoài.",
+          phieu: { loai: "giaiPhap", chu: "Tổ chức sàn giao dịch, ngày hội việc làm (trực tiếp và trực tuyến) để kết nối người lao động với doanh nghiệp." },
+          luaChon: [
+            { chu: "💼 Nộp hồ sơ làm thêm bán thời gian", ketQua: "Minh được nhận làm thêm cuối tuần ở một cửa hàng điện máy. Tiền ít nhưng học được cách giao tiếp với khách.", hieuUng: { thuNhap: 1500, tayNghe: 5, gan: 0 } },
+            { chu: "🗣️ Ngồi nghe tư vấn hướng nghiệp", ketQua: "Chuyên viên chỉ cho Minh những nghề đang thiếu người: lập trình, kĩ thuật điện, logistics. Minh ghi chép kín một trang.", hieuUng: { thuNhap: 0, tayNghe: 10, gan: 0 } }
+          ],
+          diaLi: "Kết nối cung – cầu lao động là một giải pháp quan trọng: người lao động biết chỗ nào cần người, doanh nghiệp tìm được đúng người, nhờ đó giảm thất nghiệp."
+        },
+        {
+          loai: "chon", nam: 3,
+          tieuDe: "Anh Hùng thất nghiệp",
+          moTa: "Anh Hùng, hàng xóm của Minh, tốt nghiệp đại học đã một năm mà vẫn chưa có việc đúng ngành. Anh than: \"Nhà tuyển dụng hỏi kinh nghiệm, hỏi tiếng Anh, anh đều không có.\" Minh rút ra bài học gì?",
+          phieu: { loai: "thucTrang", chu: "Một bộ phận người tốt nghiệp vẫn khó tìm việc đúng chuyên môn vì thiếu kĩ năng thực tế, ngoại ngữ và kĩ năng số." },
+          luaChon: [
+            { chu: "🌐 Học thêm tiếng Anh và kĩ năng số buổi tối", ketQua: "Mệt nhưng đáng: Minh được giao thêm việc có lương cao hơn.", hieuUng: { thuNhap: 1000, tayNghe: 15, gan: 0 }, phieuThem: { loai: "giaiPhap", chu: "Đào tạo theo nhu cầu thị trường: ưu tiên công nghệ thông tin, ngoại ngữ, kĩ năng số, kĩ năng mềm." } },
+            { chu: "🤝 Rủ anh Hùng cùng đi thực tập không lương", ketQua: "Hai anh em có thêm kinh nghiệm thực tế, anh Hùng sau đó được nhận làm chính thức.", hieuUng: { thuNhap: 0, tayNghe: 10, gan: 5 }, phieuThem: { loai: "giaiPhap", chu: "Tăng liên kết giữa nhà trường và doanh nghiệp: thực tập, đào tạo tại doanh nghiệp." } }
+          ],
+          diaLi: "Thất nghiệp ở thành thị thường cao hơn nông thôn, còn thiếu việc làm lại phổ biến ở nông thôn. Ở các đô thị lớn như Hà Nội, thất nghiệp thường gặp nhiều ở thanh niên mới ra trường."
+        },
+        {
+          loai: "cauHoi", nam: 3,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Vì sao Hà Nội thu hút rất nhiều lao động từ các tỉnh khác đến làm việc?",
+          dapAn: [
+            "Là trung tâm kinh tế, chính trị lớn, nhiều việc làm trong công nghiệp và dịch vụ, thu nhập cao hơn",
+            "Vì Hà Nội có nhiều đất nông nghiệp trống để canh tác",
+            "Vì ở Hà Nội không ai cần học nghề",
+            "Vì Hà Nội có dân số ít, thiếu người ở"
+          ],
+          dung: 0,
+          giaiThich: "Hà Nội là trung tâm chính trị, kinh tế, văn hoá của cả nước, tập trung nhiều khu công nghiệp, khu công nghệ cao và dịch vụ, nên có nhiều việc làm và thu nhập cao. Điều này hút lao động nhập cư, nhưng cũng tạo sức ép về việc làm và nhà ở.",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        },
+        {
+          loai: "chon", nam: 4,
+          tieuDe: "Chị Thảo ở phòng trọ bên",
+          moTa: "Chị Thảo từ quê lên Hà Nội đã 2 năm, làm phụ bếp theo ngày, không hợp đồng, không bảo hiểm. Chị muốn có việc ổn định hơn nhưng không biết bắt đầu từ đâu.",
+          phieu: { loai: "thucTrang", chu: "Lao động từ các tỉnh đổ về Hà Nội rất đông, tạo sức ép về việc làm và nhà ở; nhiều người làm việc phi chính thức, không hợp đồng, không bảo hiểm." },
+          luaChon: [
+            { chu: "📝 Chỉ chị đăng kí lớp học nghề ngắn hạn được hỗ trợ học phí", ketQua: "Sau 3 tháng, chị Thảo có chứng chỉ nấu ăn và được một nhà hàng kí hợp đồng.", hieuUng: { thuNhap: 0, tayNghe: 5, gan: 10 }, phieuThem: { loai: "giaiPhap", chu: "Hỗ trợ học nghề ngắn hạn cho lao động phổ thông, lao động nhập cư, lao động nông thôn." } },
+            { chu: "📱 Hướng dẫn chị tìm việc trên cổng thông tin việc làm", ketQua: "Chị Thảo tìm được việc ở bếp ăn của một khu công nghiệp, có bảo hiểm xã hội.", hieuUng: { thuNhap: 0, tayNghe: 5, gan: 5 }, phieuThem: { loai: "giaiPhap", chu: "Vận hành tốt cổng thông tin việc làm, ứng dụng công nghệ số để thu thập và phân tích dữ liệu thị trường lao động." } }
+          ],
+          diaLi: "Lao động di cư giúp các đô thị có thêm nguồn nhân lực, nhưng nếu thiếu kĩ năng thì họ dễ làm việc bấp bênh. Nâng cao chất lượng lao động là chìa khoá để có việc làm bền vững."
+        },
+        {
+          loai: "chon", nam: 5,
+          tieuDe: "Ba lời mời",
+          moTa: "Đến năm thứ 5, Minh đã có tay nghề. Ba cơ hội xuất hiện cùng lúc. Chọn con đường nào?",
+          luaChon: [
+            { chu: "🏭 Làm kĩ sư/kĩ thuật viên ở doanh nghiệp vốn nước ngoài, khu công nghệ cao Hòa Lạc", ketQua: "Lương cao, môi trường chuyên nghiệp, nhưng đi lại xa và áp lực công việc lớn.", hieuUng: { thuNhap: 6000, tayNghe: 15, gan: -5 }, nghe: "Kĩ thuật viên công nghệ cao", phieuThem: { loai: "giaiPhap", chu: "Thu hút đầu tư vào công nghiệp công nghệ cao, chuyển lao động phổ thông sang lao động có kĩ năng." } },
+            { chu: "🏡 Về ngoại thành mở xưởng sửa chữa điện tử, nhận thanh niên trong xã học việc", ketQua: "Thu nhập vừa phải, nhưng Minh tạo được việc làm cho 5 bạn trẻ ở quê.", hieuUng: { thuNhap: 3500, tayNghe: 10, gan: 20 }, nghe: "Chủ xưởng sửa chữa điện tử", phieuThem: { loai: "giaiPhap", chu: "Hỗ trợ doanh nghiệp nhỏ và khởi nghiệp (vay vốn ưu đãi) để tự tạo việc làm tại chỗ, nhất là ở ngoại thành." } },
+            { chu: "✈️ Đi làm việc ở Nhật Bản theo hợp đồng 3 năm", ketQua: "Thu nhập rất cao để gửi về gia đình, nhưng xa nhà, phải học tiếng Nhật vất vả.", hieuUng: { thuNhap: 9000, tayNghe: 10, gan: -20 }, nghe: "Lao động theo hợp đồng ở Nhật Bản", phieuThem: { loai: "giaiPhap", chu: "Mở rộng chương trình đưa người lao động đi làm việc ở nước ngoài theo hợp đồng." } }
+          ],
+          diaLi: "Mỗi hướng đi giải quyết việc làm theo một cách: phát triển công nghiệp công nghệ cao, tự tạo việc làm tại chỗ, hoặc xuất khẩu lao động. Một địa phương thường phải kết hợp nhiều giải pháp."
+        },
+        {
+          loai: "tin", nam: 6,
+          tieuDe: "📰 Bản tin thành phố",
+          moTa: "Minh đọc được tin: theo kế hoạch năm 2026, Hà Nội đặt mục tiêu giải quyết việc làm mới cho 171.000 lao động, giảm tỉ lệ thất nghiệp thành thị xuống dưới 3% và đạt 75,8% lao động qua đào tạo. (Nguồn: VnEconomy)",
+          phieu: { loai: "yNghia", chu: "Giải quyết tốt việc làm giúp giảm thất nghiệp, tăng thu nhập, nâng cao đời sống, bảo đảm an sinh xã hội và trật tự an toàn xã hội, thúc đẩy kinh tế Hà Nội phát triển bền vững." },
+          diaLi: "Việc làm là vấn đề kinh tế – xã hội lớn. Khi người lao động có việc làm ổn định, thu nhập tăng, tệ nạn xã hội giảm và nguồn lao động được sử dụng hiệu quả."
+        }
+      ]
+    },
+
+    /* ===================== A PÁO – TRUNG DU VÀ MIỀN NÚI PHÍA BẮC ===================== */
+    {
+      id: "apao", ten: "A Páo", emoji: "🧑‍🌾", anh: "hinh/apao.png", nen: "hinh/nen-tdmn.png",
+      vung: "TDMN", que: "Vùng cao Đồng Văn (Hà Giang cũ, nay thuộc Tuyên Quang)",
+      gioiThieu: "A Páo là người Mông, vừa học xong lớp 12 ở trường phổ thông dân tộc nội trú. Quê em có cao nguyên đá hùng vĩ, nhưng đường sá khó đi và ít nhà máy.",
+      batDau: { thuNhap: 2500, tayNghe: 20, gan: 80 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Đồi chè hay khu công nghiệp?",
+          moTa: "Hợp tác xã chè shan tuyết trong bản đang cần người trẻ. Nhưng anh họ của A Páo rủ xuống khu công nghiệp ở đồng bằng làm công nhân, lương mỗi tháng gấp mấy lần làm nương.",
+          luaChon: [
+            { chu: "🍃 Ở lại làm với hợp tác xã chè và dược liệu", ketQua: "Thu nhập tăng chậm, nhưng A Páo được ở gần gia đình và học cách chế biến chè đặc sản.", hieuUng: { thuNhap: 500, tayNghe: 10, gan: 15 }, nghe: "Thành viên hợp tác xã chè" },
+            { chu: "🏭 Xuống khu công nghiệp làm công nhân", ketQua: "Lương cao hơn hẳn, nhưng phải ở trọ xa nhà, ca làm dài.", hieuUng: { thuNhap: 3500, tayNghe: 5, gan: -20 }, nghe: "Công nhân lắp ráp điện tử" },
+            { chu: "🏔️ Học làm hướng dẫn viên du lịch cộng đồng", ketQua: "A Páo dẫn khách đi bản, giới thiệu văn hoá Mông. Mùa du lịch đông khách thì thu nhập khá.", hieuUng: { thuNhap: 1500, tayNghe: 15, gan: 10 }, nghe: "Hướng dẫn viên du lịch cộng đồng" }
+          ],
+          diaLi: "Trung du và miền núi phía Bắc có địa hình núi cao hiểm trở, giao thông khó khăn, ít khu công nghiệp, kinh tế còn dựa nhiều vào nông – lâm nghiệp. Vì vậy đây là vùng có thu nhập bình quân thấp nhất (3.749 nghìn đồng/người/tháng năm 2024). Thế mạnh của vùng: cây chè, dược liệu, chăn nuôi gia súc lớn, thuỷ điện, khoáng sản và du lịch."
+        },
+        {
+          loai: "chon", nam: 2,
+          tieuDe: "Mưa lớn, đường sạt lở",
+          moTa: "Mùa mưa năm nay, một đoạn đường lên bản bị sạt lở suốt một tuần. Hàng hoá không xuống được chợ huyện, khách du lịch huỷ tour.",
+          luaChon: [
+            { chu: "📱 Cùng Đoàn thanh niên bán hàng qua mạng, gửi khi đường thông", ketQua: "Khách ở thành phố đặt mua chè, mật ong. Thu nhập không bị hụt nhiều.", hieuUng: { thuNhap: 600, tayNghe: 10, gan: 5 } },
+            { chu: "⏳ Chờ thương lái lên mua như mọi năm", ketQua: "Thương lái ép giá vì đường xấu. Thu nhập năm nay giảm.", hieuUng: { thuNhap: -300, tayNghe: 0, gan: 5 } }
+          ],
+          diaLi: "Mùa mưa ở miền núi hay xảy ra lũ quét, sạt lở đất. Giao thông khó khăn làm nông sản khó tiêu thụ, dễ bị ép giá. Đầu tư hạ tầng giao thông và thương mại điện tử giúp người dân vùng cao tăng thu nhập."
+        },
+        {
+          loai: "cauHoi", nam: 3,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Vì sao Trung du và miền núi phía Bắc có thu nhập bình quân đầu người thấp nhất cả nước năm 2024?",
+          dapAn: [
+            "Địa hình hiểm trở, giao thông khó, ít công nghiệp – dịch vụ, kinh tế chủ yếu là nông – lâm nghiệp",
+            "Vì vùng có dân số đông nhất cả nước",
+            "Vì vùng hoàn toàn không có tài nguyên thiên nhiên",
+            "Vì khí hậu nóng quanh năm, không trồng được cây gì"
+          ],
+          dung: 0,
+          giaiThich: "Vùng giàu tài nguyên (khoáng sản, thuỷ điện, đất trồng chè, dược liệu) nhưng địa hình chia cắt, giao thông khó, công nghiệp và dịch vụ kém phát triển, trình độ lao động còn thấp nên thu nhập chưa cao.",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        }
+      ]
+    },
+
+    /* ===================== LAN – BẮC TRUNG BỘ ===================== */
+    {
+      id: "lan", ten: "Lan", emoji: "👩‍🔧", anh: "hinh/lan.png", nen: "hinh/nen-btb.png",
+      vung: "BTB", que: "Nghệ An",
+      gioiThieu: "Lan lớn lên ở một làng ven biển Nghệ An. Quê Lan nắng gió, hay có bão, nhưng mấy năm gần đây các khu kinh tế ven biển mọc lên, mở ra nhiều cơ hội mới.",
+      batDau: { thuNhap: 3000, tayNghe: 20, gan: 70 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Khu kinh tế tuyển người",
+          moTa: "Một khu kinh tế ven biển trong vùng đang tuyển hàng nghìn lao động. Cùng lúc đó, cô bạn thân rủ Lan học tiếng Nhật để đi làm việc ở nước ngoài.",
+          luaChon: [
+            { chu: "🏗️ Vào làm nhà máy ở khu kinh tế ven biển", ketQua: "Lan được đào tạo vận hành máy, có lương ổn định và bảo hiểm.", hieuUng: { thuNhap: 2500, tayNghe: 15, gan: 0 }, nghe: "Công nhân kĩ thuật khu kinh tế" },
+            { chu: "✈️ Học tiếng Nhật, đi làm việc ở nước ngoài theo hợp đồng", ketQua: "Một năm học vất vả, sau đó Lan sang Nhật làm việc, gửi tiền về xây nhà cho bố mẹ.", hieuUng: { thuNhap: 6000, tayNghe: 10, gan: -20 }, nghe: "Lao động theo hợp đồng ở Nhật Bản" },
+            { chu: "🍲 Ở lại cùng mẹ mở quán đặc sản xứ Nghệ", ketQua: "Quán đông khách vào mùa du lịch biển, vắng vào mùa mưa bão.", hieuUng: { thuNhap: 1200, tayNghe: 10, gan: 15 }, nghe: "Chủ quán đặc sản xứ Nghệ" }
+          ],
+          diaLi: "Bắc Trung Bộ có nhiều khu kinh tế ven biển đang thu hút đầu tư (như Nghi Sơn, Vũng Áng), tạo thêm nhiều việc làm. Vùng cũng có nhiều lao động đi làm việc ở nước ngoài. Nhờ đó, thu nhập của vùng tăng nhanh nhất cả nước: từ 903 lên 4.630 nghìn đồng (gấp khoảng 5,1 lần, 2010–2024)."
+        },
+        {
+          loai: "chon", nam: 2,
+          tieuDe: "Bão và gió Lào",
+          moTa: "Mùa hè năm nay gió Lào khô nóng kéo dài, cuối năm lại có bão lớn đổ bộ. Mái nhà nhà Lan bị tốc, vụ lúa của bố mẹ mất trắng.",
+          luaChon: [
+            { chu: "🛡️ Dùng tiền tiết kiệm gia cố nhà, mua bảo hiểm cho năm sau", ketQua: "Tốn một khoản, nhưng năm sau gia đình yên tâm hơn trước mùa bão.", hieuUng: { thuNhap: -500, tayNghe: 5, gan: 10 } },
+            { chu: "🔁 Khuyên bố mẹ chuyển sang giống lúa ngắn ngày, né mùa bão", ketQua: "Thu hoạch sớm trước bão, thu nhập gia đình ổn định hơn.", hieuUng: { thuNhap: 400, tayNghe: 10, gan: 5 } }
+          ],
+          diaLi: "Bắc Trung Bộ là vùng chịu nhiều thiên tai: bão, lũ, hạn hán và gió phơn Tây Nam (gió Lào) khô nóng. Thiên tai làm giảm thu nhập, vì vậy người dân cần chủ động phòng chống thiên tai và thích ứng với biến đổi khí hậu."
+        },
+        {
+          loai: "cauHoi", nam: 3,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Theo Bảng 4 SGK, vùng nào có thu nhập bình quân đầu người tăng NHANH NHẤT giai đoạn 2010–2024?",
+          dapAn: [ "Bắc Trung Bộ", "Đông Nam Bộ", "Đồng bằng sông Hồng", "Trung du và miền núi phía Bắc" ],
+          dung: 0,
+          giaiThich: "Bắc Trung Bộ tăng từ 903 lên 4.630 nghìn đồng, gấp khoảng 5,1 lần – nhanh nhất cả nước. (Cách tính: 4.630 ÷ 903 ≈ 5,1.) Năm 2010 đây còn là vùng thấp nhất!",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        }
+      ]
+    },
+
+    /* ===================== H'HEN – DUYÊN HẢI NAM TRUNG BỘ VÀ TÂY NGUYÊN ===================== */
+    {
+      id: "hhen", ten: "H'Hen", emoji: "👩‍🌾", anh: "hinh/hhen.png", nen: "hinh/nen-tn.png",
+      vung: "NTBTN", que: "Đắk Lắk",
+      gioiThieu: "H'Hen là người Ê Đê, nhà có vườn cà phê trên đất đỏ badan. Từ buôn của H'Hen đi xuống biển Nam Trung Bộ cũng không quá xa.",
+      batDau: { thuNhap: 2800, tayNghe: 20, gan: 75 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Vườn cà phê của gia đình",
+          moTa: "Vườn cà phê của gia đình đã già cỗi. Bố muốn H'Hen ở nhà phụ giúp, còn chị họ rủ xuống thành phố biển làm lễ tân khách sạn.",
+          luaChon: [
+            { chu: "☕ Ở nhà, học kĩ thuật tưới tiết kiệm, làm cà phê đặc sản", ketQua: "Năng suất tăng, cà phê sạch bán được giá cao hơn.", hieuUng: { thuNhap: 1200, tayNghe: 15, gan: 10 }, nghe: "Nông dân cà phê đặc sản" },
+            { chu: "🏖️ Xuống thành phố biển làm lễ tân khách sạn", ketQua: "H'Hen học tiếng Anh giao tiếp, mùa du lịch có thêm tiền thưởng.", hieuUng: { thuNhap: 2000, tayNghe: 10, gan: -10 }, nghe: "Lễ tân khách sạn biển" },
+            { chu: "🌱 Trồng xen sầu riêng, hồ tiêu trong vườn cà phê", ketQua: "Vài năm đầu chưa có thu, nhưng sau này nhiều nguồn thu hơn, đỡ rủi ro.", hieuUng: { thuNhap: 600, tayNghe: 10, gan: 15 }, nghe: "Chủ vườn cây công nghiệp" }
+          ],
+          diaLi: "Tây Nguyên có đất badan màu mỡ, là vùng chuyên canh cà phê lớn nhất nước ta; Duyên hải Nam Trung Bộ mạnh về du lịch biển, khai thác và nuôi trồng thuỷ sản. Thu nhập ở đây phụ thuộc nhiều vào giá nông sản và thời tiết, nên vùng có thu nhập thấp thứ hai (4.360 nghìn đồng năm 2024)."
+        },
+        {
+          loai: "chon", nam: 2,
+          tieuDe: "Mùa khô thiếu nước",
+          moTa: "Mùa khô năm nay kéo dài, giếng cạn, hồ chứa thiếu nước. Cùng lúc, giá cà phê thế giới lại giảm.",
+          luaChon: [
+            { chu: "💧 Góp vốn cùng các hộ làm hệ thống tưới nhỏ giọt", ketQua: "Vườn vẫn đủ nước, cây không bị chết.", hieuUng: { thuNhap: 300, tayNghe: 10, gan: 5 } },
+            { chu: "🤷 Tưới như cũ, chờ mưa", ketQua: "Một phần vườn bị khô héo, thu nhập giảm mạnh.", hieuUng: { thuNhap: -800, tayNghe: 0, gan: 0 } }
+          ],
+          diaLi: "Tây Nguyên có mùa khô kéo dài, thường thiếu nước tưới. Xây dựng thuỷ lợi, tưới tiết kiệm và đa dạng cây trồng giúp giảm rủi ro thu nhập."
+        },
+        {
+          loai: "cauHoi", nam: 3,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Vì sao thu nhập của nhiều hộ trồng cà phê ở Tây Nguyên hay lên xuống thất thường?",
+          dapAn: [
+            "Vì phụ thuộc vào giá nông sản trên thị trường và thời tiết (mùa khô, hạn hán)",
+            "Vì Tây Nguyên không có đất trồng trọt",
+            "Vì cà phê là cây lương thực",
+            "Vì vùng có quá nhiều khu công nghiệp"
+          ],
+          dung: 0,
+          giaiThich: "Cà phê là cây công nghiệp xuất khẩu, giá phụ thuộc thị trường thế giới. Mùa khô kéo dài, hạn hán cũng làm giảm năng suất. Vì vậy thu nhập của người trồng cà phê kém ổn định.",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        }
+      ]
+    },
+
+    /* ===================== TUẤN – ĐÔNG NAM BỘ ===================== */
+    {
+      id: "tuan", ten: "Tuấn", emoji: "👷", anh: "hinh/tuan.png", nen: "hinh/nen-dnb.png",
+      vung: "DNB", que: "Thủ Dầu Một (Bình Dương cũ, nay thuộc TP. Hồ Chí Minh)",
+      gioiThieu: "Tuấn sống giữa vùng có nhiều khu công nghiệp nhất cả nước. Xung quanh nhà là nhà máy, dãy trọ của công nhân từ khắp nơi đến.",
+      batDau: { thuNhap: 3500, tayNghe: 20, gan: 50 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Ba khu công nghiệp gọi tên",
+          moTa: "Cổng nhà máy nào cũng treo băng rôn \"Tuyển gấp\". Tuấn có thể đi làm ngay, hoặc học thêm một nghề kĩ thuật.",
+          luaChon: [
+            { chu: "🏭 Vào làm công nhân dây chuyền ngay", ketQua: "Có lương ngay, tăng ca nhiều thì thu nhập khá.", hieuUng: { thuNhap: 4000, tayNghe: 5, gan: 0 }, nghe: "Công nhân dây chuyền" },
+            { chu: "🔧 Học cao đẳng Cơ điện tử 2 năm rồi mới đi làm", ketQua: "Hai năm chỉ có tiền làm thêm, nhưng ra trường có tay nghề vững.", hieuUng: { thuNhap: 1500, tayNghe: 25, gan: 0 }, nghe: "Kĩ thuật viên cơ điện tử" },
+            { chu: "🛵 Chạy giao hàng tự do", ketQua: "Thu nhập khá, giờ giấc tự do, nhưng không có bảo hiểm.", hieuUng: { thuNhap: 4500, tayNghe: 0, gan: 0 }, nghe: "Tài xế giao hàng" }
+          ],
+          diaLi: "Đông Nam Bộ có nhiều khu công nghiệp nhất cả nước, thu hút nhiều vốn đầu tư nước ngoài; công nghiệp và dịch vụ phát triển mạnh. Vì vậy đây là vùng có thu nhập bình quân cao nhất (6.868 nghìn đồng/người/tháng năm 2024) và thu hút lao động từ khắp các vùng."
+        },
+        {
+          loai: "chon", nam: 3,
+          tieuDe: "Robot vào nhà máy",
+          moTa: "Nhà máy đầu tư dây chuyền tự động hoá. Một nửa công nhân phổ thông sắp phải chuyển việc.",
+          luaChon: [
+            { chu: "🤖 Đăng kí khoá học vận hành máy tự động", ketQua: "Tuấn trở thành người vận hành robot, lương tăng.", hieuUng: { thuNhap: 2000, tayNghe: 15, gan: 0 } },
+            { chu: "📦 Chuyển sang việc bốc xếp kho, không cần học thêm", ketQua: "Vẫn có việc, nhưng lương giảm và công việc nặng nhọc.", hieuUng: { thuNhap: -1000, tayNghe: 0, gan: 0 } }
+          ],
+          diaLi: "Khi doanh nghiệp đổi mới công nghệ, nhu cầu lao động tay nghề cao tăng, còn lao động phổ thông dễ mất việc. Nâng cao chất lượng nguồn lao động là xu hướng tất yếu."
+        },
+        {
+          loai: "cauHoi", nam: 4,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Năm 2024, Đông Nam Bộ có thu nhập cao nhất, nhưng giai đoạn 2010–2024 lại tăng chậm nhất (khoảng 3,1 lần). Vì sao?",
+          dapAn: [
+            "Vì năm 2010 vùng đã có mức thu nhập cao nhất, xuất phát điểm cao nên tốc độ tăng (số lần) thấp hơn",
+            "Vì kinh tế của vùng bị suy thoái",
+            "Vì dân số của vùng giảm mạnh",
+            "Vì vùng không còn khu công nghiệp nào"
+          ],
+          dung: 0,
+          giaiThich: "Đông Nam Bộ tăng thêm 4.656 nghìn đồng – nhiều thứ hai về số tuyệt đối. Nhưng vì xuất phát cao (2.212 nghìn đồng năm 2010) nên tính theo số lần (6.868 ÷ 2.212 ≈ 3,1) lại thấp nhất. Khi nhận xét bảng số liệu, nhớ phân biệt tăng thêm bao nhiêu và tăng gấp bao nhiêu lần!",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        }
+      ]
+    },
+
+    /* ===================== ÚT – ĐỒNG BẰNG SÔNG CỬU LONG ===================== */
+    {
+      id: "ut", ten: "Út", emoji: "🚣‍♀️", anh: "hinh/ut.png", nen: "hinh/nen-dbscl.png",
+      vung: "DBSCL", que: "Cà Mau",
+      gioiThieu: "Út lớn lên bên sông rạch, rừng đước và những cánh đồng lúa – tôm của Cà Mau, mũi đất cực Nam của Tổ quốc.",
+      batDau: { thuNhap: 2800, tayNghe: 20, gan: 75 },
+      canh: [
+        {
+          loai: "chon", nam: 1,
+          tieuDe: "Ruộng lúa bị nhiễm mặn",
+          moTa: "Mùa khô năm nay nước mặn lấn sâu, ruộng lúa nhà Út bị cháy lá. Nhiều bạn cùng xóm đã khăn gói lên Đông Nam Bộ làm công nhân.",
+          luaChon: [
+            { chu: "🦐 Ở lại, chuyển sang mô hình tôm – lúa", ketQua: "Mùa khô nuôi tôm, mùa mưa trồng lúa. Thu nhập ổn định hơn trước.", hieuUng: { thuNhap: 1200, tayNghe: 15, gan: 10 }, nghe: "Nông dân tôm – lúa" },
+            { chu: "🚌 Lên Đông Nam Bộ làm công nhân", ketQua: "Lương cao hơn ở quê, nhưng phải ở trọ, xa gia đình.", hieuUng: { thuNhap: 3500, tayNghe: 5, gan: -20 }, nghe: "Công nhân khu công nghiệp" },
+            { chu: "🌳 Làm du lịch sinh thái rừng đước", ketQua: "Út chèo xuồng đưa khách tham quan rừng ngập mặn, kể chuyện về đất mũi.", hieuUng: { thuNhap: 1500, tayNghe: 10, gan: 15 }, nghe: "Hướng dẫn viên du lịch sinh thái" }
+          ],
+          diaLi: "Đồng bằng sông Cửu Long là vùng sản xuất lúa và thuỷ sản lớn nhất nước ta, nhưng đang chịu tác động mạnh của biến đổi khí hậu và xâm nhập mặn. Nông nghiệp thu nhập chưa cao nên nhiều lao động trẻ di cư lên Đông Nam Bộ."
+        },
+        {
+          loai: "chon", nam: 2,
+          tieuDe: "Thương lái ép giá",
+          moTa: "Vụ tôm được mùa nhưng thương lái ép giá rất thấp.",
+          luaChon: [
+            { chu: "🤝 Vào hợp tác xã, cùng bán cho nhà máy chế biến xuất khẩu", ketQua: "Giá ổn định theo hợp đồng, có kĩ sư hướng dẫn nuôi đạt chuẩn.", hieuUng: { thuNhap: 800, tayNghe: 10, gan: 5 } },
+            { chu: "💸 Bán vội cho thương lái", ketQua: "Có tiền ngay nhưng lãi rất ít.", hieuUng: { thuNhap: -200, tayNghe: 0, gan: 0 } }
+          ],
+          diaLi: "Liên kết sản xuất (nông dân – hợp tác xã – doanh nghiệp) giúp nông sản có đầu ra ổn định, tăng giá trị và thu nhập cho người dân."
+        },
+        {
+          loai: "cauHoi", nam: 3,
+          tieuDe: "❓ Câu hỏi chặn đường",
+          cauHoi: "Vì sao nhiều lao động trẻ ở Đồng bằng sông Cửu Long di cư lên Đông Nam Bộ?",
+          dapAn: [
+            "Vì Đông Nam Bộ có nhiều khu công nghiệp, nhiều việc làm và thu nhập cao hơn, lại ở gần",
+            "Vì Đồng bằng sông Cửu Long không còn đất ở",
+            "Vì Đông Nam Bộ có nhiều ruộng lúa hơn",
+            "Vì ở quê không có trường học"
+          ],
+          dung: 0,
+          giaiThich: "Năm 2024, thu nhập bình quân ở Đông Nam Bộ là 6.868 nghìn đồng, cao hơn nhiều so với 4.770 nghìn đồng ở Đồng bằng sông Cửu Long. Hai vùng lại liền kề nhau, đi lại thuận tiện.",
+          thuong: { thuNhap: 300, tayNghe: 5 }
+        }
+      ]
+    }
+  ]
+};
