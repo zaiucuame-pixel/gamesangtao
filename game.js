@@ -255,7 +255,7 @@
       <div class="ket-qua">
         ${loi ? `<p class="loi">${esc(loi)}</p>` : ""}
         ${chipHieuUng(hieuUng)}
-        ${diaLi ? `<div class="goc-dia-li"><b>📍 Góc Địa lí:</b> ${esc(diaLi)}</div>` : ""}
+        ${diaLi ? `<div class="goc-dia-li"><b>📍 Góc Địa lí:</b> ${esc(diaLi)}${anhThat(tt.nv.canh[tt.buoc].anh)}</div>` : ""}
         ${phieuHtml}
         <div class="hang-nut"><button class="nut" id="nut-tiep">${laCuoi ? "Xem hồ sơ cuộc đời 🏁" : "Năm tiếp theo →"}</button></div>
       </div>`;
@@ -268,6 +268,14 @@
     if (thanh[1]) thanh[1].style.width = tt.gan + "%";
     document.getElementById("nut-tiep").onclick = canhTiep;
     document.getElementById("ket-qua").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function anhThat(a) {
+    if (!a) return "";
+    return `<figure class="anh-that">
+      <img src="${esc(a.src)}" alt="${esc(a.chu)}" loading="lazy" onerror="this.closest('figure').remove()">
+      <figcaption>📷 ${esc(a.chu)}${a.nguon ? `<br><small>${esc(a.nguon)}</small>` : ""}</figcaption>
+    </figure>`;
   }
 
   const tenLoaiPhieu = l => ({ thucTrang: "Thực trạng", giaiPhap: "Giải pháp", yNghia: "Ý nghĩa" }[l] || "Ghi chú");

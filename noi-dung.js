@@ -207,6 +207,11 @@ window.NOI_DUNG = {
           "thuong": {
             "thuNhap": 300,
             "tayNghe": 5
+          },
+          "anh": {
+            "src": "hinh/that/giao-thong-ha-noi.webp",
+            "chu": "Giờ cao điểm trên đường phố Hà Nội – dân số và lao động tập trung đông ở thủ đô.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
           }
         },
         {
@@ -297,7 +302,12 @@ window.NOI_DUNG = {
               }
             }
           ],
-          "diaLi": "Mỗi hướng đi giải quyết việc làm theo một cách: phát triển công nghiệp công nghệ cao, tự tạo việc làm tại chỗ, hoặc xuất khẩu lao động. Một địa phương thường phải kết hợp nhiều giải pháp."
+          "diaLi": "Mỗi hướng đi giải quyết việc làm theo một cách: phát triển công nghiệp công nghệ cao, tự tạo việc làm tại chỗ, hoặc xuất khẩu lao động. Một địa phương thường phải kết hợp nhiều giải pháp.",
+          "anh": {
+            "src": "hinh/that/hoa-lac.webp",
+            "chu": "Khu công nghệ cao Hòa Lạc (Hà Nội) nhìn từ trên cao.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "tin",
@@ -364,7 +374,12 @@ window.NOI_DUNG = {
               "nghe": "Hướng dẫn viên du lịch cộng đồng"
             }
           ],
-          "diaLi": "Trung du và miền núi phía Bắc có địa hình núi cao hiểm trở, giao thông khó khăn, ít khu công nghiệp, kinh tế còn dựa nhiều vào nông – lâm nghiệp. Vì vậy đây là vùng có thu nhập bình quân thấp nhất (3.749 nghìn đồng/người/tháng năm 2024). Thế mạnh của vùng: cây chè, dược liệu, chăn nuôi gia súc lớn, thuỷ điện, khoáng sản và du lịch."
+          "diaLi": "Trung du và miền núi phía Bắc có địa hình núi cao hiểm trở, giao thông khó khăn, ít khu công nghiệp, kinh tế còn dựa nhiều vào nông – lâm nghiệp. Vì vậy đây là vùng có thu nhập bình quân thấp nhất (3.749 nghìn đồng/người/tháng năm 2024). Thế mạnh của vùng: cây chè, dược liệu, chăn nuôi gia súc lớn, thuỷ điện, khoáng sản và du lịch.",
+          "anh": {
+            "src": "hinh/that/doi-che.webp",
+            "chu": "Đồi chè – cây công nghiệp thế mạnh của Trung du và miền núi phía Bắc.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -391,7 +406,12 @@ window.NOI_DUNG = {
               }
             }
           ],
-          "diaLi": "Mùa mưa ở miền núi hay xảy ra lũ quét, sạt lở đất. Giao thông khó khăn làm nông sản khó tiêu thụ, dễ bị ép giá. Đầu tư hạ tầng giao thông và thương mại điện tử giúp người dân vùng cao tăng thu nhập."
+          "diaLi": "Mùa mưa ở miền núi hay xảy ra lũ quét, sạt lở đất. Giao thông khó khăn làm nông sản khó tiêu thụ, dễ bị ép giá. Đầu tư hạ tầng giao thông và thương mại điện tử giúp người dân vùng cao tăng thu nhập.",
+          "anh": {
+            "src": "hinh/that/deo-ha-giang.webp",
+            "chu": "Đường đèo trên cao nguyên đá Hà Giang: địa hình hiểm trở khiến đi lại, vận chuyển hàng hoá rất khó khăn.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "cauHoi",
@@ -456,6 +476,11 @@ window.NOI_DUNG = {
           "thuong": {
             "thuNhap": 300,
             "tayNghe": 5
+          },
+          "anh": {
+            "src": "hinh/that/cao-nguyen-da.webp",
+            "chu": "Cao nguyên đá Đồng Văn – Công viên địa chất toàn cầu UNESCO.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
           }
         },
         {
@@ -541,7 +566,12 @@ window.NOI_DUNG = {
               "nghe": "Chủ quán đặc sản xứ Nghệ"
             }
           ],
-          "diaLi": "Bắc Trung Bộ có nhiều khu kinh tế ven biển đang thu hút đầu tư (như Nghi Sơn, Vũng Áng), tạo thêm nhiều việc làm. Vùng cũng có nhiều lao động đi làm việc ở nước ngoài. Nhờ đó, thu nhập của vùng tăng nhanh nhất cả nước: từ 903 lên 4.630 nghìn đồng (gấp khoảng 5,1 lần, 2010–2024)."
+          "diaLi": "Bắc Trung Bộ có nhiều khu kinh tế ven biển đang thu hút đầu tư (như Nghi Sơn, Vũng Áng), tạo thêm nhiều việc làm. Vùng cũng có nhiều lao động đi làm việc ở nước ngoài. Nhờ đó, thu nhập của vùng tăng nhanh nhất cả nước: từ 903 lên 4.630 nghìn đồng (gấp khoảng 5,1 lần, 2010–2024).",
+          "anh": {
+            "src": "hinh/that/cang-bien.webp",
+            "chu": "Cảng biển ở khu kinh tế ven biển – nơi tạo ra nhiều việc làm mới (ảnh minh hoạ).",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -588,7 +618,12 @@ window.NOI_DUNG = {
             "thuNhap": 0,
             "tayNghe": 10
           },
-          "diaLi": "Giải quyết việc làm không chỉ là tạo việc cho người thất nghiệp mà còn cần giảm tình trạng thiếu việc làm."
+          "diaLi": "Giải quyết việc làm không chỉ là tạo việc cho người thất nghiệp mà còn cần giảm tình trạng thiếu việc làm.",
+          "anh": {
+            "src": "hinh/that/bien-cua-lo.webp",
+            "chu": "Bãi biển Cửa Lò (Nghệ An): du lịch biển đông khách vào mùa hè, vắng khách các tháng còn lại.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -718,7 +753,12 @@ window.NOI_DUNG = {
               "nghe": "Chủ vườn cây công nghiệp"
             }
           ],
-          "diaLi": "Tây Nguyên có đất badan màu mỡ, là vùng chuyên canh cà phê lớn nhất nước ta; Duyên hải Nam Trung Bộ mạnh về du lịch biển, khai thác và nuôi trồng thuỷ sản. Thu nhập ở đây phụ thuộc nhiều vào giá nông sản và thời tiết, nên vùng có thu nhập thấp thứ hai (4.360 nghìn đồng năm 2024)."
+          "diaLi": "Tây Nguyên có đất badan màu mỡ, là vùng chuyên canh cà phê lớn nhất nước ta; Duyên hải Nam Trung Bộ mạnh về du lịch biển, khai thác và nuôi trồng thuỷ sản. Thu nhập ở đây phụ thuộc nhiều vào giá nông sản và thời tiết, nên vùng có thu nhập thấp thứ hai (4.360 nghìn đồng năm 2024).",
+          "anh": {
+            "src": "hinh/that/ca-phe.webp",
+            "chu": "Thu hoạch cà phê – cây công nghiệp chủ lực của Tây Nguyên.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -897,7 +937,12 @@ window.NOI_DUNG = {
               "nghe": "Tài xế giao hàng"
             }
           ],
-          "diaLi": "Đông Nam Bộ có nhiều khu công nghiệp nhất cả nước, thu hút nhiều vốn đầu tư nước ngoài; công nghiệp và dịch vụ phát triển mạnh. Vì vậy đây là vùng có thu nhập bình quân cao nhất (6.868 nghìn đồng/người/tháng năm 2024) và thu hút lao động từ khắp các vùng."
+          "diaLi": "Đông Nam Bộ có nhiều khu công nghiệp nhất cả nước, thu hút nhiều vốn đầu tư nước ngoài; công nghiệp và dịch vụ phát triển mạnh. Vì vậy đây là vùng có thu nhập bình quân cao nhất (6.868 nghìn đồng/người/tháng năm 2024) và thu hút lao động từ khắp các vùng.",
+          "anh": {
+            "src": "hinh/that/khu-cong-nghiep.webp",
+            "chu": "Một khu công nghiệp ở Đông Nam Bộ nhìn từ trên cao (ảnh minh hoạ).",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -1076,7 +1121,12 @@ window.NOI_DUNG = {
               "nghe": "Hướng dẫn viên du lịch sinh thái"
             }
           ],
-          "diaLi": "Đồng bằng sông Cửu Long là vùng sản xuất lúa và thuỷ sản lớn nhất nước ta, nhưng đang chịu tác động mạnh của biến đổi khí hậu và xâm nhập mặn. Nông nghiệp thu nhập chưa cao nên nhiều lao động trẻ di cư lên Đông Nam Bộ."
+          "diaLi": "Đồng bằng sông Cửu Long là vùng sản xuất lúa và thuỷ sản lớn nhất nước ta, nhưng đang chịu tác động mạnh của biến đổi khí hậu và xâm nhập mặn. Nông nghiệp thu nhập chưa cao nên nhiều lao động trẻ di cư lên Đông Nam Bộ.",
+          "anh": {
+            "src": "hinh/that/rung-duoc.webp",
+            "chu": "Rừng ngập mặn ven biển Cà Mau.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "chon",
@@ -1103,7 +1153,12 @@ window.NOI_DUNG = {
               }
             }
           ],
-          "diaLi": "Liên kết sản xuất (nông dân – hợp tác xã – doanh nghiệp) giúp nông sản có đầu ra ổn định, tăng giá trị và thu nhập cho người dân."
+          "diaLi": "Liên kết sản xuất (nông dân – hợp tác xã – doanh nghiệp) giúp nông sản có đầu ra ổn định, tăng giá trị và thu nhập cho người dân.",
+          "anh": {
+            "src": "hinh/that/tom-rung.webp",
+            "chu": "Tôm nuôi theo mô hình tôm – rừng, kết hợp bảo vệ rừng ngập mặn.",
+            "nguon": "Ảnh sưu tầm từ Internet, dùng cho mục đích học tập"
+          }
         },
         {
           "loai": "cauHoi",

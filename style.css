@@ -178,6 +178,10 @@ main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
   background: #eef5ff; border-left: 6px solid #2f6fde;
 }
 .goc-dia-li b { color: #1e4fae; }
+.anh-that { margin: 10px 0 0; }
+.anh-that img { display: block; width: 100%; max-height: 340px; object-fit: cover; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(22,35,74,.18); }
+.anh-that figcaption { font-size: 13px; color: var(--chu-nhat); margin-top: 6px; }
+.anh-that small { font-size: 11px; opacity: .8; }
 .phieu-moi {
   border-radius: 14px; padding: 12px 14px; margin: 10px 0;
   background: #fff6db; border: 2px dashed var(--vang-dam);

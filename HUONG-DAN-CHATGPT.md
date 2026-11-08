@@ -64,3 +64,13 @@ Sau đó gửi kết quả về cho Claude soát lại trước khi ghép vào.
 
 - Số liệu trong `vung: [...]` lấy từ **Bảng 4 SGK**. Đừng để AI tự đổi số này.
 - Mỗi lần nhờ AI sửa, hãy gửi bản **mới nhất** từ GitHub, tránh ghi đè lên phần bên kia vừa làm.
+
+## 5. Ảnh thật trong "Góc Địa lí"
+
+Cảnh nào muốn có ảnh thật thì thêm trường `anh` vào cảnh đó, đặt file ảnh trong `hinh/that/`:
+
+```js
+anh: { src: "hinh/that/ten-anh.webp", chu: "Chú thích ảnh", nguon: "Nguồn / tác giả ảnh" }
+```
+
+Nên ghi rõ nguồn ảnh. Không dùng ảnh thấy rõ mặt người thật khi chưa được phép.
