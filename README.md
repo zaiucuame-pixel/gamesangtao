@@ -14,7 +14,7 @@ Số liệu: Bảng 4 SGK – Thu nhập bình quân đầu người một thán
 - **📘 Bài học** – kinh tế bình thường, bám sát Bài 4.
 - **📰 Thời cuộc 2019–2024** – mỗi nhân vật trải qua 3 sự kiện có thật (dịch COVID-19, giá xăng dầu, phân bón tăng, bão Yagi, hạn mặn…), mỗi sự kiện có ghi nguồn. Thu nhập nhân vật là số mô phỏng.
 
-Mỗi nhân vật có **tâm lý riêng** (hoàn cảnh, ước mơ, nỗi lo) và chỉ số 💭 tâm trạng; lựa chọn dẫn tới nhiều **kết thúc** khác nhau, lưu trong 📔 Album.
+Mỗi nhân vật có **tâm lý riêng** (hoàn cảnh, ước mơ, nỗi lo) và chỉ số 💭 tâm trạng; lựa chọn dẫn tới nhiều **kết thúc** khác nhau, lưu trong 📔 Album. Hoàn thành **🎯 nhiệm vụ** (vd. 6/6 câu chuyện) để nhận huy hiệu và **skin giao diện** (Đồng lúa chín, Phố cổ về đêm, Biển miền Trung, Hoa ban Tây Bắc, khung chân dung vàng).
 
 ## Cấu trúc
 

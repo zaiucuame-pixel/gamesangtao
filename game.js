@@ -27,8 +27,9 @@
   function ghiLuu(d) {
     try { localStorage.setItem(KHOA, JSON.stringify(d)); } catch (e) { /* bỏ qua */ }
   }
-  const LUU_TRONG = () => ({ daChoi: {}, phieu: [], album: {}, huyHieu: {}, cheDo: "baiHoc" });
+  const LUU_TRONG = () => ({ daChoi: {}, phieu: [], album: {}, huyHieu: {}, uocMo: {}, thongThai: 0, cheDo: "baiHoc", skin: "mac-dinh", khung: "" });
   let luu = Object.assign(LUU_TRONG(), docLuu());
+  luu.uocMo = luu.uocMo || {}; luu.thongThai = luu.thongThai || 0;
 
   let tbHen;
   function thongBao(chu) {
@@ -103,6 +104,11 @@
         <p style="font-size:14px;opacity:.85">Đã trải nghiệm: <b>${soNv}/6</b> nhân vật · <b>${soKt}</b> kết thúc trong 📔 Album${soNv ? " · Mở <b>🏆 Đại hội 6 vùng</b> để so sánh!" : ""}</p>
         <div class="dai-mau">${daiMau}</div>
       </section>
+
+      <details class="the bang-nv-gon" ${Object.keys(luu.daChoi).length ? "open" : ""}>
+        <summary><b>🎯 Nhiệm vụ</b> <small>${NHIEM_VU.filter(n => luu.huyHieu[n.id]).length}/${NHIEM_VU.length} hoàn thành · phần thưởng: huy hiệu & skin</small></summary>
+        <div class="luoi-nhiem-vu">${bangNhiemVu()}</div>
+      </details>
 
       <h2>🧭 Chọn chế độ chơi</h2>
       <div class="chon-che-do">
@@ -345,26 +351,66 @@
   /* =========================================================
      MÀN 3: HỒ SƠ CUỘC ĐỜI
      ========================================================= */
-  function capHuyHieu() {
+  /* =========================================================
+     NHIỆM VỤ – HUY HIỆU – SKIN
+     ========================================================= */
+  const soNvXong = cd => new Set(Object.keys(luu.daChoi)
+    .filter(k => cd === "baiHoc" ? (k.endsWith(":baiHoc") || !k.includes(":")) : k.endsWith(":" + cd))
+    .map(k => k.split(":")[0])).size;
+
+  const NHIEM_VU = [
+    { id: "du-6-vung", icon: "🗺️", ten: "Đi đủ 6 vùng", mo: "Hoàn thành câu chuyện của cả 6 nhân vật ở chế độ Bài học",
+      tien: () => [soNvXong("baiHoc"), 6], skin: "lua-chin" },
+    { id: "thoi-cuoc", icon: "📰", ten: "Nhân chứng thời cuộc", mo: "Hoàn thành cả 6 câu chuyện ở chế độ Thời cuộc 2019–2024",
+      tien: () => [soNvXong("thoiCuoc"), 6], skin: "pho-co" },
+    { id: "uoc-mo", icon: "🌟", ten: "Người truyền cảm hứng", mo: "Giúp 3 nhân vật khác nhau thực hiện được ước mơ",
+      tien: () => [Object.keys(luu.uocMo).length, 3], skin: "bien" },
+    { id: "suu-tam", icon: "🏆", ten: "Nhà sưu tầm", mo: "Mở khoá 15 kết thúc trong album",
+      tien: () => [Object.keys(luu.album).length, 15], skin: "hoa-ban" },
+    { id: "thong-thai", icon: "🧠", ten: "Thông thái", mo: "Trả lời đúng mọi câu hỏi chặn đường trong 3 lượt chơi",
+      tien: () => [luu.thongThai, 3], khung: "vang" }
+  ];
+  const SKIN = {
+    "mac-dinh": { icon: "🧭", ten: "Mặc định" },
+    "lua-chin": { icon: "🌾", ten: "Đồng lúa chín" },
+    "pho-co": { icon: "🏮", ten: "Phố cổ về đêm" },
+    "bien": { icon: "🌊", ten: "Biển miền Trung" },
+    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc" }
+  };
+  const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : "✨ khung chân dung vàng";
+
+  function apSkin() {
+    const moKhoa = id => id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]);
+    const s = SKIN[luu.skin] && moKhoa(luu.skin) ? luu.skin : "mac-dinh";
+    document.body.dataset.skin = s;
+    document.body.dataset.khung = luu.khung === "vang" && luu.huyHieu["thong-thai"] ? "vang" : "";
+    const ic = document.querySelector(".logo-icon");
+    if (ic) ic.textContent = SKIN[s].icon;
+  }
+
+  function kiemNhiemVu() {
     const moi = [];
-    const nvDaChoi = cd => new Set(Object.keys(luu.daChoi).filter(k => !cd || k.endsWith(":" + cd)).map(k => k.split(":")[0])).size;
-    const dat = (id, ok) => { if (ok && !luu.huyHieu[id]) { luu.huyHieu[id] = true; moi.push(id); } };
-    dat("du-6-vung", nvDaChoi() >= 6);
-    dat("thoi-cuoc", nvDaChoi("thoiCuoc") >= 6);
-    dat("thong-thai", tt.tongCau > 0 && tt.dungCau === tt.tongCau);
-    dat("vuot-bq", tt.thuNhap >= tt.v.tn2024);
-    dat("uoc-mo", L.uocMoDat(tt, tt.nv, tt.v, tt.cheDo, MR));
-    dat("suu-tam", Object.keys(luu.album).length >= 15);
+    for (const n of NHIEM_VU) {
+      const [a, b] = n.tien();
+      if (a >= b && !luu.huyHieu[n.id]) { luu.huyHieu[n.id] = true; moi.push(n); }
+    }
     return moi;
   }
-  const HUY_HIEU = {
-    "du-6-vung": ["🗺️", "Đi đủ 6 vùng", "Chơi cả 6 nhân vật"],
-    "thoi-cuoc": ["📰", "Nhân chứng thời cuộc", "Chơi cả 6 nhân vật ở chế độ Thời cuộc"],
-    "thong-thai": ["🧠", "Thông thái", "Trả lời đúng mọi câu hỏi trong một lượt chơi"],
-    "vuot-bq": ["💰", "Vượt bình quân", "Thu nhập cuối game vượt bình quân đầu người của vùng"],
-    "uoc-mo": ["🌟", "Chạm tới ước mơ", "Giúp một nhân vật thực hiện được ước mơ"],
-    "suu-tam": ["🏆", "Nhà sưu tầm", "Mở khoá 15 kết thúc trong album"]
-  };
+
+  function bangNhiemVu() {
+    return NHIEM_VU.map(n => {
+      const [a, b] = n.tien(), xong = !!luu.huyHieu[n.id];
+      const pt = Math.min(100, Math.round(a / b * 100));
+      return `<div class="nhiem-vu ${xong ? "xong" : ""}">
+        <span class="nv-icon">${n.icon}</span>
+        <div class="nv-than">
+          <b>${esc(n.ten)}</b> <small>${esc(n.mo)}</small>
+          <div class="nv-thanh"><i style="width:${pt}%"></i></div>
+          <small class="nv-so">${xong ? "✅ Hoàn thành" : `${Math.min(a, b)}/${b}`} · 🎁 ${phanThuong(n)}</small>
+        </div>
+      </div>`;
+    }).join("");
+  }
 
   function manKetThuc() {
     const { nv, v, cheDo } = tt;
@@ -381,7 +427,9 @@
       const da = new Set(luu.phieu.map(p => p.chu));
       tt.phieu.forEach(p => { if (!da.has(p.chu)) { luu.phieu.push(p); da.add(p.chu); } });
     }
-    const hhMoi = capHuyHieu();
+    if (datUocMo) luu.uocMo[nv.id] = true;
+    if (tt.tongCau > 0 && tt.dungCau === tt.tongCau) luu.thongThai = (luu.thongThai || 0) + 1;
+    const hhMoi = kiemNhiemVu();
     ghiLuu(luu);
 
     const tile = tt.thuNhap / v.tn2024;
@@ -413,7 +461,7 @@
           <span>💭 Tâm trạng <b>${mat(tt.tamTrang)} ${tt.tamTrang}</b></span>
           ${tt.tongCau ? `<span>❓ Câu hỏi đúng <b>${tt.dungCau}/${tt.tongCau}</b></span>` : ""}
         </div>
-        ${hhMoi.length ? `<div class="hh-moi">${hhMoi.map(id => `<span>${HUY_HIEU[id][0]} Huy hiệu mới: <b>${HUY_HIEU[id][1]}</b></span>`).join("")}</div>` : ""}
+        ${hhMoi.length ? `<div class="hh-moi">${hhMoi.map(n => `<span>🎉 Hoàn thành nhiệm vụ ${n.icon} <b>${esc(n.ten)}</b> – nhận huy hiệu + ${phanThuong(n)}!</span>`).join("")}<button class="nut" data-den="album">🎨 Mở Tủ đồ</button></div>` : ""}
 
         <div class="so-sanh">
           <div class="dong"><span>💰 Thu nhập của ${esc(nv.ten)}</span><div class="cot" style="width:${w(tt.thuNhap)}">${so(tt.thuNhap)}</div></div>
@@ -443,8 +491,19 @@
      MÀN ALBUM
      ========================================================= */
   function manAlbum() {
-    const hh = Object.entries(HUY_HIEU).map(([id, [ic, ten, mo]]) =>
-      `<div class="huy-hieu-lon ${luu.huyHieu[id] ? "co" : ""}"><span>${ic}</span><b>${ten}</b><small>${mo}</small></div>`).join("");
+    const hh = NHIEM_VU.map(n =>
+      `<div class="huy-hieu-lon ${luu.huyHieu[n.id] ? "co" : ""}"><span>${n.icon}</span><b>${esc(n.ten)}</b><small>${esc(n.mo)}</small></div>`).join("");
+    const daMo = id => id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]);
+    const skinHtml = Object.entries(SKIN).map(([id, s]) => {
+      const nvu = NHIEM_VU.find(n => n.skin === id);
+      const mo = daMo(id), dang = (luu.skin || "mac-dinh") === id;
+      return `<button class="o-skin ${mo ? "" : "khoa"} ${dang ? "dang-dung" : ""}" data-skin="${id}" ${mo ? "" : "disabled"}>
+        <span class="mau-skin skin-${id}"></span>
+        <b>${s.icon} ${esc(s.ten)}</b>
+        <small>${dang ? "✔ Đang dùng" : mo ? "Bấm để dùng" : "🔒 " + esc(nvu.ten)}</small>
+      </button>`;
+    }).join("");
+    const coKhung = !!luu.huyHieu["thong-thai"];
     let tong = 0, mo = 0;
     const khoi = ND.nhanVat.map(nv => {
       const v = VUNG[nv.vung];
@@ -461,11 +520,26 @@
     $san.innerHTML = `
       <section class="anh-bia" style="margin-bottom:16px">
         <span class="nhan">📔 Bộ sưu tập</span>
-        <h1 style="font-size:clamp(28px,6vw,44px)">Album cuộc đời</h1>
-        <p>Mỗi lựa chọn dẫn tới một kết thúc khác. Bạn đã mở khoá <b>${mo}/${tong}</b> kết thúc. Thử chơi lại với những lựa chọn khác nhé!</p>
+        <h1 style="font-size:clamp(28px,6vw,44px)">Album & Tủ đồ</h1>
+        <p>Bạn đã mở khoá <b>${mo}/${tong}</b> kết thúc. Hoàn thành nhiệm vụ để nhận huy hiệu và skin giao diện mới!</p>
       </section>
-      <article class="the"><h2>🏅 Huy hiệu</h2><div class="luoi-huy-hieu">${hh}</div></article>
+      <article class="the"><h2>🎨 Tủ đồ – Skin giao diện</h2>
+        <div class="luoi-skin">${skinHtml}</div>
+        <label class="chon-khung ${coKhung ? "" : "khoa"}">
+          <input type="checkbox" id="khung-vang" ${luu.khung === "vang" ? "checked" : ""} ${coKhung ? "" : "disabled"}>
+          ✨ Khung chân dung vàng ${coKhung ? "" : "<small>🔒 Hoàn thành nhiệm vụ Thông thái</small>"}
+        </label>
+      </article>
+      <article class="the buoc"><h2>🎯 Nhiệm vụ</h2><div class="luoi-nhiem-vu">${bangNhiemVu()}</div></article>
+      <article class="the buoc"><h2>🏅 Huy hiệu</h2><div class="luoi-huy-hieu">${hh}</div></article>
       <article class="the buoc"><h2>🎞️ Kết thúc đã mở</h2>${khoi}</article>`;
+    $san.querySelectorAll(".o-skin:not([disabled])").forEach(b => b.onclick = () => {
+      luu.skin = b.dataset.skin; ghiLuu(luu); apSkin();
+      thongBao(`${SKIN[luu.skin].icon} Đã đổi sang skin ${SKIN[luu.skin].ten}`);
+      manAlbum();
+    });
+    const k = document.getElementById("khung-vang");
+    if (k) k.onchange = () => { luu.khung = k.checked ? "vang" : ""; ghiLuu(luu); apSkin(); };
     lenDau();
   }
 
@@ -817,6 +891,7 @@
   function ganDieuHuong(goc) {
     goc.querySelectorAll("[data-den]").forEach(b => b.addEventListener("click", () => den(b.dataset.den)));
   }
+  apSkin();
   ganDieuHuong(document.querySelector(".menu"));
   document.getElementById("ve-trang-chu").onclick = () => den("chon");
 

@@ -63,6 +63,11 @@ with sync_playwright() as p:
         pg.on("dialog", lambda d: d.accept())
         pg.goto(URL)
         rng = random.Random(18)
+        # lúc mới vào: skin phải đang khoá
+        pg.click(".menu [data-den=album]")
+        if pg.query_selector(".o-skin[data-skin=lua-chin]:not([disabled])"):
+            loi.append(f"[{ten_mh}] skin Đồng lúa chín mở sẵn khi chưa chơi")
+        pg.click(".menu [data-den=chon]")
         lan = 3 if ten_mh == "điện thoại" else 1
         for che_do in ["baiHoc", "thoiCuoc"]:
             for nv in NV:
@@ -79,6 +84,23 @@ with sync_playwright() as p:
         if so < 6:
             loi.append(f"[{ten_mh}] album chỉ mở {so} kết thúc sau khi chơi hết – có thể không lưu")
         print(f"  · {ten_mh}: album mở {so} kết thúc")
+        # nhiệm vụ 6/6 phải hoàn thành và trao skin
+        for nvu, skin in [("Đi đủ 6 vùng", "lua-chin"), ("Nhân chứng thời cuộc", "pho-co")]:
+            if not pg.query_selector(f".nhiem-vu.xong:has-text('{nvu}')"):
+                loi.append(f"[{ten_mh}] chơi đủ 6/6 nhưng nhiệm vụ '{nvu}' chưa hoàn thành")
+            if not pg.query_selector(f".o-skin[data-skin={skin}]:not([disabled])"):
+                loi.append(f"[{ten_mh}] nhiệm vụ '{nvu}' xong nhưng skin {skin} vẫn khoá")
+        pg.click(".o-skin[data-skin=pho-co]")
+        pg.reload()
+        if pg.evaluate("document.body.dataset.skin") != "pho-co":
+            loi.append(f"[{ten_mh}] đổi skin xong tải lại trang thì mất")
+        for den in ["chon", "album", "giaovien"]:
+            pg.click(f".menu [data-den={den}]")
+            kiem_tran_ngang(pg, f"[{ten_mh}] skin Phố cổ – màn {den}")
+        pg.click(".menu [data-den=chon]")
+        mau = pg.evaluate("getComputedStyle(document.querySelector('main > h2')).color")
+        if mau.startswith("rgb(29, 36, 64)"):
+            loi.append(f"[{ten_mh}] skin tối nhưng tiêu đề vẫn chữ tối – khó đọc")
         pg.close()
     b.close()
 
