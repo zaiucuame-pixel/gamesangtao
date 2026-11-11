@@ -1,0 +1,13 @@
+rules_version = '2';
+// Luật bảo mật Firestore cho game "Tuổi 18 – Chọn đường mưu sinh"
+// Mỗi người chơi chỉ đọc/ghi được đúng hồ sơ của mình.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /nguoiChoi/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['ten', 'tienDo', 'capNhat', 'taoLuc'])
+        && (!('tienDo' in request.resource.data) || request.resource.data.tienDo.size() < 200000);
+    }
+  }
+}

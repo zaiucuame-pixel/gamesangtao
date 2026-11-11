@@ -8,4 +8,7 @@ echo "=== CHƠI THỬ TRÊN TRÌNH DUYỆT ==="
 python3 kiem-tra/choi-thu.py || exit 1
 echo
 echo "=== THẨM MỸ SKIN (độ tương phản) ==="
-python3 kiem-tra/tham-my.py
+python3 kiem-tra/tham-my.py || exit 1
+echo
+echo "=== TÀI KHOẢN (máy chủ giả lập) ==="
+python3 kiem-tra/tai-khoan.py

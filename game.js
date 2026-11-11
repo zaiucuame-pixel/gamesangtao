@@ -21,15 +21,48 @@
   const lenDau = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const mat = m => m >= 70 ? "😄" : m >= 50 ? "🙂" : m >= 35 ? "😐" : "😟";
 
-  function docLuu() {
-    try { return JSON.parse(localStorage.getItem(KHOA)) || {}; } catch (e) { return {}; }
+  /* Mỗi tài khoản có ngăn lưu riêng trên máy; khách dùng ngăn KHOA */
+  let khoaHienTai = KHOA;
+  function docLuu(k = khoaHienTai) {
+    try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; }
   }
+  let henDongBo = null, trangThaiDongBo = "";
   function ghiLuu(d) {
-    try { localStorage.setItem(KHOA, JSON.stringify(d)); } catch (e) { /* bỏ qua */ }
+    try { localStorage.setItem(khoaHienTai, JSON.stringify(d)); } catch (e) { /* bỏ qua */ }
+    if (window.TAI_KHOAN && TAI_KHOAN.nguoiDung()) {
+      trangThaiDongBo = "dang";
+      clearTimeout(henDongBo);
+      henDongBo = setTimeout(dongBoNgay, 800);
+    }
   }
+  function dongBoNgay() {
+    clearTimeout(henDongBo); henDongBo = null;
+    if (!(window.TAI_KHOAN && TAI_KHOAN.nguoiDung())) return Promise.resolve();
+    return TAI_KHOAN.luuTienDo(luu)
+      .then(() => { trangThaiDongBo = "xong"; capNhatNutTK(); })
+      .catch(() => { trangThaiDongBo = "loi"; capNhatNutTK(); });
+  }
+  window.addEventListener("pagehide", () => { if (henDongBo) dongBoNgay(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && henDongBo) dongBoNgay(); });
+
   const LUU_TRONG = () => ({ daChoi: {}, phieu: [], album: {}, huyHieu: {}, uocMo: {}, thongThai: 0, cheDo: "baiHoc", skin: "mac-dinh", khung: "" });
-  let luu = Object.assign(LUU_TRONG(), docLuu());
-  luu.uocMo = luu.uocMo || {}; luu.thongThai = luu.thongThai || 0;
+  const chuanHoa = d => { const x = Object.assign(LUU_TRONG(), d || {}); x.uocMo = x.uocMo || {}; x.thongThai = x.thongThai || 0; return x; };
+  /* Gộp hai bản tiến độ: không bao giờ làm mất huy chương, kết thúc, skin */
+  function gop(a, b) {
+    a = chuanHoa(a); b = chuanHoa(b);
+    const p = new Set(a.phieu.map(x => x.chu));
+    return Object.assign({}, a, {
+      daChoi: Object.assign({}, b.daChoi, a.daChoi),
+      album: Object.assign({}, b.album, a.album),
+      huyHieu: Object.assign({}, b.huyHieu, a.huyHieu),
+      uocMo: Object.assign({}, b.uocMo, a.uocMo),
+      thongThai: Math.max(a.thongThai, b.thongThai),
+      phieu: [...a.phieu, ...b.phieu.filter(x => !p.has(x.chu))],
+      skin: a.skin !== "mac-dinh" ? a.skin : b.skin,
+      khung: a.khung || b.khung
+    });
+  }
+  let luu = chuanHoa(docLuu());
 
   let tbHen;
   function thongBao(chu) {
@@ -146,6 +179,7 @@
   let tt = null; // trạng thái lượt chơi
 
   function batDau(id) {
+    manHienTai = "choi";
     const nv = ND.nhanVat.find(n => n.id === id);
     const cheDo = luu.cheDo;
     tt = Object.assign(L.trangThaiDau(nv, MR), {
@@ -378,14 +412,15 @@
     return id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]) || BI_MAT.some(k => k.skin === id && daTimBiMat(k));
   }
   const SKIN = {
-    "mac-dinh": { icon: "🧭", ten: "Mặc định" },
-    "lua-chin": { icon: "🌾", ten: "Đồng lúa chín" },
-    "pho-co": { icon: "🏮", ten: "Phố cổ về đêm" },
-    "bien": { icon: "🌊", ten: "Biển miền Trung" },
-    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc" },
-    "chong-dich": { icon: "💙", ten: "Tuyến đầu chống dịch" },
-    "giang-sinh": { icon: "🎄", ten: "Giáng sinh" },
-    "halloween": { icon: "🎃", ten: "Halloween" }
+    /* hat: hạt trang trí rơi/bay trên nền; len: bay lên thay vì rơi xuống */
+    "mac-dinh": { icon: "🧭", ten: "Mặc định", hat: [] },
+    "lua-chin": { icon: "🌾", ten: "Đồng lúa chín", hat: ["🌾", "🍃", "🌾"] },
+    "pho-co": { icon: "🏮", ten: "Phố cổ về đêm", hat: ["🏮", "✨", "🏮"], len: true },
+    "bien": { icon: "🌊", ten: "Biển miền Trung", hat: ["🫧", "🫧", "🐚"], len: true },
+    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc", hat: ["🌸", "🌸", "🤍"] },
+    "chong-dich": { icon: "💙", ten: "Tuyến đầu chống dịch", hat: ["💙", "✨", "🤍"], len: true },
+    "giang-sinh": { icon: "🎄", ten: "Giáng sinh", hat: ["❄️", "❄️", "⭐", "❄️"] },
+    "halloween": { icon: "🎃", ten: "Halloween", hat: ["🦇", "🍂", "🦇", "🕸️"] }
   };
   const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : nvu.khung ? "✨ khung chân dung vàng" : "🏅 huy hiệu đặc biệt";
 
@@ -395,6 +430,27 @@
     document.body.dataset.khung = luu.khung === "vang" && luu.huyHieu["thong-thai"] ? "vang" : "";
     const ic = document.querySelector(".logo-icon");
     if (ic) ic.textContent = SKIN[s].icon;
+    veHatRoi(SKIN[s]);
+  }
+
+  /* Lớp hạt trang trí rơi/bay (nằm sau nội dung, không bắt chuột) */
+  function veHatRoi(sk) {
+    let lop = document.getElementById("hat-roi");
+    if (!lop) {
+      lop = document.createElement("div");
+      lop.id = "hat-roi"; lop.className = "hat-roi"; lop.setAttribute("aria-hidden", "true");
+      document.body.prepend(lop);
+    }
+    lop.classList.toggle("len", !!sk.len);
+    if (lop.dataset.skin === sk.ten) return;
+    lop.dataset.skin = sk.ten;
+    const n = sk.hat.length ? 16 : 0;
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      const tg = 10 + (i * 7) % 11, tre = -((i * 13) % tg), co = 14 + (i * 5) % 12;
+      html += `<span style="left:${(i * 37 + 5) % 100}%;font-size:${co}px;animation-duration:${tg}s,${3 + i % 3}s;animation-delay:${tre}s,${tre}s;opacity:${0.35 + (i % 4) * 0.12}">${sk.hat[i % sk.hat.length]}</span>`;
+    }
+    lop.innerHTML = html;
   }
 
   function kiemNhiemVu() {
@@ -865,7 +921,7 @@
 
       <article class="the buoc">
         <h2>🧹 Máy dùng chung</h2>
-        <p style="margin-top:0">Game lưu tiến độ (nhân vật đã chơi, phiếu điều tra) trên trình duyệt của từng máy. Trước khi lớp sau vào phòng máy, bấm nút dưới để xoá.</p>
+        <p style="margin-top:0">Ngoài tài khoản, game còn lưu một bản tiến độ trên trình duyệt của từng máy. Trước khi lớp sau vào phòng máy, bấm nút dưới để xoá bản lưu trên máy và đăng xuất. Huy chương trong tài khoản của học sinh vẫn được giữ nguyên.</p>
         <button class="nut phu" id="xoa-het">🗑️ Xoá toàn bộ tiến độ trên máy này</button>
       </article>
     `;
@@ -888,24 +944,146 @@
     };
     window.onafterprint = () => document.body.classList.remove("dang-in-phieu");
     $("xoa-het").onclick = () => {
-      if (!confirm("Xoá toàn bộ tiến độ và phiếu điều tra trên máy này?")) return;
-      luu = LUU_TRONG();
-      ghiLuu(luu);
-      thongBao("🧹 Đã xoá tiến độ");
+      if (!confirm("Xoá toàn bộ tiến độ lưu trên máy này và đăng xuất?\n(Huy chương trong tài khoản của học sinh KHÔNG bị xoá.)")) return;
+      const daDangNhap = window.TAI_KHOAN && TAI_KHOAN.nguoiDung();
+      clearTimeout(henDongBo); henDongBo = null;
+      for (const k of Object.keys(localStorage)) if (k === KHOA || k.startsWith(KHOA + ":")) localStorage.removeItem(k);
+      try { sessionStorage.removeItem("gamesangtao-khach"); } catch (e) { /* bỏ qua */ }
+      khoaHienTai = KHOA; luu = LUU_TRONG(); apSkin();
+      if (daDangNhap) TAI_KHOAN.dangXuat();
+      thongBao("🧹 Đã xoá tiến độ trên máy này");
     };
     lenDau();
+  }
+
+
+  /* =========================================================
+     TÀI KHOẢN: đăng ký, đăng nhập, đồng bộ huy chương
+     ========================================================= */
+  const TK = window.TAI_KHOAN;
+  const KHOA_KHACH = "gamesangtao-khach";       // đã chọn "chơi không cần tài khoản" trong phiên này
+  let vuaDangKy = false;
+
+  function capNhatNutTK() {
+    const n = document.getElementById("nut-tk");
+    if (!n) return;
+    const u = TK && TK.nguoiDung();
+    n.textContent = u ? `👤 ${u.ten}${trangThaiDongBo === "loi" ? " ⚠️" : ""}` : "👤 Đăng nhập";
+    n.classList.toggle("da-dang-nhap", !!u);
+  }
+
+  function huyChuong() {
+    return [...NHIEM_VU.filter(n => luu.huyHieu[n.id]).map(n => [n.icon, n.ten]),
+            ...BI_MAT.filter(daTimBiMat).map(k => [k.icon, k.tieuDe])];
+  }
+
+  function moHopTK(che = "dangNhap", batBuoc = false) {
+    let hop = document.getElementById("hop-tk");
+    if (!hop) {
+      hop = document.createElement("div");
+      hop.id = "hop-tk"; hop.className = "hop-nen";
+      document.body.appendChild(hop);
+      hop.addEventListener("click", e => { if (e.target === hop && !hop.dataset.batBuoc) dongHopTK(); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && !hop.hidden && !hop.dataset.batBuoc) dongHopTK(); });
+    }
+    hop.hidden = false;
+    batBuoc ? (hop.dataset.batBuoc = "1") : delete hop.dataset.batBuoc;
+    const u = TK && TK.nguoiDung();
+    let than;
+    if (!TK || !TK.coSan()) {
+      than = `<h2 id="hop-tieu-de">👤 Tài khoản</h2>
+        <p>Tài khoản <b>chưa được bật</b> trên trang này. Hiện tiến độ đang lưu trên trình duyệt của máy bạn.</p>
+        <p class="ghi-chu">Người quản lí trang cần cấu hình Firebase theo file <b>HUONG-DAN-FIREBASE.md</b>.</p>
+        <div class="hang-nut"><button class="nut" data-dong>Đóng</button></div>`;
+    } else if (u) {
+      const hc = huyChuong();
+      than = `<h2 id="hop-tieu-de">👤 ${esc(u.ten)}</h2>
+        <p class="trang-thai-dong-bo">${trangThaiDongBo === "loi" ? "⚠️ Chưa lưu được lên tài khoản (mất mạng?). Game sẽ thử lại ở lần lưu sau." : "☁️ Tiến độ được lưu trên tài khoản – đăng nhập ở máy nào cũng còn."}</p>
+        <h3>🏅 Huy chương (${hc.length})</h3>
+        <div class="tk-huy-chuong">${hc.length ? hc.map(([i, t]) => `<span title="${esc(t)}">${i} <small>${esc(t)}</small></span>`).join("") : `<p class="trong">Chưa có huy chương nào. Hoàn thành nhiệm vụ để nhận nhé!</p>`}</div>
+        <p class="ghi-chu">Đã chơi ${Object.keys(luu.daChoi).length} câu chuyện · mở ${Object.keys(luu.album).length} kết thúc · skin đang dùng: ${SKIN[document.body.dataset.skin].icon} ${esc(SKIN[document.body.dataset.skin].ten)}</p>
+        <div class="hang-nut"><button class="nut" data-dong>Chơi tiếp</button><button class="nut phu" id="tk-dang-xuat">Đăng xuất</button></div>`;
+    } else {
+      const dk = che === "dangKy";
+      than = `<h2 id="hop-tieu-de">${dk ? "✨ Tạo tài khoản" : "👤 Đăng nhập"}</h2>
+        <p style="margin-top:0">${batBuoc ? "Đăng nhập để huy chương và skin được lưu lại, chơi ở máy nào cũng còn." : "Huy chương và skin sẽ được lưu trên tài khoản của bạn."}</p>
+        <form id="form-tk" autocomplete="on">
+          <label>Tên đăng nhập<input id="tk-ten" name="username" autocomplete="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]{3,20}" placeholder="vd: meo_con_9a" autocapitalize="none" spellcheck="false"></label>
+          <label>Mật khẩu<input id="tk-mk" name="password" type="password" autocomplete="${dk ? "new-password" : "current-password"}" required minlength="6" placeholder="ít nhất 6 kí tự"></label>
+          ${dk ? `<label>Nhập lại mật khẩu<input id="tk-mk2" type="password" autocomplete="new-password" required minlength="6"></label>` : ""}
+          <p class="tk-loi" id="tk-loi" role="alert"></p>
+          <button class="nut" type="submit" id="tk-gui">${dk ? "Tạo tài khoản" : "Đăng nhập"}</button>
+        </form>
+        <p class="tk-doi">${dk ? `Đã có tài khoản? <button class="lien-ket" data-che="dangNhap">Đăng nhập</button>` : `Chưa có tài khoản? <button class="lien-ket" data-che="dangKy">Tạo tài khoản mới</button>`}</p>
+        ${dk ? `<p class="ghi-chu">🔒 Chỉ dùng <b>biệt danh</b> – đừng dùng họ tên thật, số điện thoại hay email. Hãy <b>nhớ kĩ mật khẩu</b>: game không lưu email nên quên mật khẩu sẽ không lấy lại được.</p>` : ""}
+        ${batBuoc ? `<p class="tk-doi"><button class="lien-ket" id="tk-khach">Chơi thử không cần tài khoản</button><br><small>Tiến độ chỉ lưu trên máy này, có thể mất khi đổi máy.</small></p>` : `<div class="hang-nut" style="margin-top:6px"><button class="nut phu" data-dong>Để sau</button></div>`}`;
+    }
+    hop.innerHTML = `<div class="hop" role="dialog" aria-modal="true" aria-labelledby="hop-tieu-de">${batBuoc ? "" : `<button class="hop-dong" data-dong aria-label="Đóng">✕</button>`}${than}</div>`;
+    hop.querySelectorAll("[data-dong]").forEach(b => b.onclick = dongHopTK);
+    hop.querySelectorAll("[data-che]").forEach(b => b.onclick = () => moHopTK(b.dataset.che, batBuoc));
+    const khach = hop.querySelector("#tk-khach");
+    if (khach) khach.onclick = () => { try { sessionStorage.setItem(KHOA_KHACH, "1"); } catch (e) { /* bỏ qua */ } dongHopTK(); };
+    const dx = hop.querySelector("#tk-dang-xuat");
+    if (dx) dx.onclick = async () => { await dongBoNgay(); dongHopTK(); thongBao("👋 Đã đăng xuất"); await TK.dangXuat(); };
+    const form = hop.querySelector("#form-tk");
+    if (form) {
+      const ten = form.querySelector("#tk-ten"); ten.focus();
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const mk = form.querySelector("#tk-mk").value, mk2 = form.querySelector("#tk-mk2");
+        const baoLoi = t => { form.querySelector("#tk-loi").textContent = t; };
+        if (mk2 && mk2.value !== mk) return baoLoi("Hai lần nhập mật khẩu chưa khớp.");
+        const nut = form.querySelector("#tk-gui"); nut.disabled = true; baoLoi("");
+        try {
+          vuaDangKy = che === "dangKy";
+          await (vuaDangKy ? TK.dangKy(ten.value, mk) : TK.dangNhap(ten.value, mk));
+        } catch (err) { vuaDangKy = false; baoLoi(TK.dichLoi(err)); nut.disabled = false; }
+      };
+    }
+  }
+  function dongHopTK() {
+    const hop = document.getElementById("hop-tk");
+    if (hop) { hop.hidden = true; hop.innerHTML = ""; }
+  }
+
+  async function khiDoiTaiKhoan(u, loiKetNoi) {
+    if (loiKetNoi) thongBao("⚠️ " + loiKetNoi);
+    if (u) {
+      const khach = vuaDangKy ? docLuu(KHOA) : null;   // tạo tài khoản mới: mang theo tiến độ đã chơi thử
+      khoaHienTai = KHOA + ":" + u.uid;
+      let may = docLuu(), may_chu = null;
+      try { may_chu = await TK.taiTienDo(); } catch (e) { trangThaiDongBo = "loi"; }
+      luu = gop(gop(may_chu, may), khach);
+      vuaDangKy = false;
+      ghiLuu(luu); dongBoNgay();
+      dongHopTK();
+      thongBao(`👋 Chào ${u.ten}! Huy chương của bạn đã được tải.`);
+    } else {
+      khoaHienTai = KHOA;
+      luu = chuanHoa(docLuu());
+      trangThaiDongBo = "";
+      let daChonKhach = false;
+      try { daChonKhach = sessionStorage.getItem(KHOA_KHACH) === "1"; } catch (e) { /* bỏ qua */ }
+      if (TK.coSan() && !daChonKhach) moHopTK("dangNhap", true);
+    }
+    apSkin(); capNhatNutTK();
+    if (manHienTai !== "choi") den(manHienTai);
   }
 
   /* =========================================================
      ĐIỀU HƯỚNG
      ========================================================= */
   const MAN = { chon: manChon, baocao: manBaoCao, daihoi: manDaiHoi, giaovien: manGiaoVien, album: manAlbum };
-  function den(ten) { (MAN[ten] || manChon)(); }
+  let manHienTai = "chon";
+  function den(ten) { manHienTai = MAN[ten] ? ten : "chon"; (MAN[ten] || manChon)(); }
   function ganDieuHuong(goc) {
     goc.querySelectorAll("[data-den]").forEach(b => b.addEventListener("click", () => den(b.dataset.den)));
   }
   apSkin();
   ganDieuHuong(document.querySelector(".menu"));
+  document.getElementById("nut-tk").onclick = () => moHopTK("dangNhap");
+  capNhatNutTK();
+  if (TK) TK.khoiDong(khiDoiTaiKhoan);
   document.getElementById("ve-trang-chu").onclick = () => den("chon");
 
   manChon();
