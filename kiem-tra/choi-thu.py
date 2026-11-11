@@ -54,6 +54,34 @@ def choi(pg, nv, che_do, rng):
     kiem_anh(pg, ten)
     pg.click("#ve-trang-chu")
 
+def choi_bi_mat(pg, nv, che_do, uu_tien, skin, ten):
+    """Chơi theo đúng tổ hợp lựa chọn bí mật (ưu tiên các nút chứa chữ trong uu_tien)."""
+    pg.click(".menu [data-den=chon]")
+    pg.click(f"[data-che-do={che_do}]")
+    pg.click(f"[data-nv={nv}]")
+    pg.click("#nut-di")
+    for _ in range(30):
+        if pg.query_selector("#nut-ghi"):
+            pg.click("#nut-ghi")
+        else:
+            nut = pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")
+            chon = next((b for b in nut for u in uu_tien if u in b.inner_text()), nut[0])
+            chon.click()
+        chu = pg.inner_text("#nut-tiep"); pg.click("#nut-tiep")
+        if "hồ sơ" in chu.lower():
+            break
+    if not pg.query_selector(".bao-bi-mat"):
+        loi.append(f"{ten}: đi đúng đường bí mật nhưng không ra kết thúc bí mật")
+        return
+    pg.click(".bao-bi-mat [data-den=album]")
+    if not pg.query_selector(f".o-skin[data-skin={skin}]:not([disabled])"):
+        loi.append(f"{ten}: tìm ra bí mật nhưng skin {skin} vẫn khoá")
+    else:
+        pg.click(f".o-skin[data-skin={skin}]")
+        if pg.evaluate("document.body.dataset.skin") != skin:
+            loi.append(f"{ten}: bấm skin {skin} nhưng giao diện không đổi")
+        kiem_tran_ngang(pg, f"{ten} – Tủ đồ với skin {skin}")
+
 with sync_playwright() as p:
     b = p.chromium.launch()
     for ten_mh, vp in [("điện thoại", {"width": 375, "height": 760}), ("máy tính", {"width": 1200, "height": 900})]:
@@ -90,6 +118,17 @@ with sync_playwright() as p:
                 loi.append(f"[{ten_mh}] chơi đủ 6/6 nhưng nhiệm vụ '{nvu}' chưa hoàn thành")
             if not pg.query_selector(f".o-skin[data-skin={skin}]:not([disabled])"):
                 loi.append(f"[{ten_mh}] nhiệm vụ '{nvu}' xong nhưng skin {skin} vẫn khoá")
+        # 3 kết thúc bí mật
+        choi_bi_mat(pg, "minh", "thoiCuoc", ["tình nguyện", "Đoàn thanh niên"], "chong-dich", f"[{ten_mh}] bí mật Minh")
+        choi_bi_mat(pg, "hhen", "thoiCuoc", ["máy sấy", "nhóm sản xuất"], "giang-sinh", f"[{ten_mh}] bí mật H'Hen")
+        choi_bi_mat(pg, "ut", "baiHoc", ["rừng đước", "bán theo đơn"], "halloween", f"[{ten_mh}] bí mật Út")
+        pg.click(".menu [data-den=chon]")
+        mau = pg.evaluate("getComputedStyle(document.querySelector('main > h2')).color")
+        if mau.startswith("rgb(29, 36, 64)"):
+            loi.append(f"[{ten_mh}] skin Halloween (tối) nhưng tiêu đề vẫn chữ tối – khó đọc")
+        if not pg.query_selector(".nhiem-vu.xong:has-text('Thợ săn bí mật')"):
+            loi.append(f"[{ten_mh}] tìm đủ 3 bí mật nhưng nhiệm vụ Thợ săn bí mật chưa xong")
+        pg.click(".menu [data-den=album]")
         pg.click(".o-skin[data-skin=pho-co]")
         pg.reload()
         if pg.evaluate("document.body.dataset.skin") != "pho-co":

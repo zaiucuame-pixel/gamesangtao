@@ -160,7 +160,7 @@ window.MO_RONG = {
           { chu: "📝 Giúp bố làm hồ sơ xin hỗ trợ, rồi tự học lập trình trực tuyến", ketQua: "Gia đình nhận được một phần hỗ trợ; Minh dùng thời gian ở nhà để học thêm.", hieuUng: { thuNhap: -500, tayNghe: 15, gan: 5, tamTrang: 2 },
             phieuThem: { loai: "giaiPhap", chu: "Hỗ trợ trực tiếp người lao động ngừng việc, mất việc (gói 26.000 tỷ đồng theo Nghị quyết 68 năm 2021) để họ vượt qua khó khăn." } },
           { chu: "🛵 Chạy giao hàng thiết yếu cho các khu dân cư", ketQua: "Đơn hàng nhiều nên thu nhập khá, nhưng Minh mệt rã rời và luôn lo bị lây bệnh.", hieuUng: { thuNhap: 2500, tayNghe: 2, gan: 0, tamTrang: -8 }, nghe: "Nhân viên giao hàng" },
-          { chu: "🙋 Làm tình nguyện viên ở điểm tiêm, phát quà cho người khó khăn", ketQua: "Không có lương, nhưng Minh thấy mình có ích và hiểu hơn cuộc sống của nhiều người.", hieuUng: { thuNhap: -500, tayNghe: 6, gan: 10, tamTrang: 8 } }
+          { chu: "🙋 Làm tình nguyện viên ở điểm tiêm, phát quà cho người khó khăn", ketQua: "Không có lương, nhưng Minh thấy mình có ích và hiểu hơn cuộc sống của nhiều người.", hieuUng: { thuNhap: -500, tayNghe: 6, gan: 10, tamTrang: 8 }, dat: "tinhNguyen" }
         ],
         diaLi: "Dịch bệnh làm nhu cầu lao động trong dịch vụ giảm mạnh. Các gói hỗ trợ của Nhà nước giúp người lao động đảm bảo cuộc sống; kĩ năng số giúp thích ứng với việc học, việc làm trực tuyến."
       },
@@ -196,7 +196,7 @@ window.MO_RONG = {
         moTa: "Bão Yagi quật đổ hàng nghìn cây xanh ở Hà Nội, rồi nước sông Hồng dâng cao làm ngập nhiều khu dân cư ngoài đê.",
         phieu: { loai: "yNghia", chu: "Có việc làm ổn định, có bảo hiểm giúp người lao động và gia đình đứng vững khi thiên tai, dịch bệnh xảy ra." },
         luaChon: [
-          { chu: "🦺 Cùng Đoàn thanh niên giúp bà con vùng ngập chuyển đồ", ketQua: "Mấy ngày liền không làm được gì cho mình, nhưng Minh thấy ấm lòng.", hieuUng: { thuNhap: -300, tayNghe: 3, gan: 12, tamTrang: 6 } },
+          { chu: "🦺 Cùng Đoàn thanh niên giúp bà con vùng ngập chuyển đồ", ketQua: "Mấy ngày liền không làm được gì cho mình, nhưng Minh thấy ấm lòng.", hieuUng: { thuNhap: -300, tayNghe: 3, gan: 12, tamTrang: 6 }, dat: "giupBaCon" },
           { chu: "🔧 Nhận sửa điện, sửa máy bơm cho các nhà bị ngập", ketQua: "Việc rất nhiều, Minh làm xuyên đêm; vừa có thu nhập vừa giúp được hàng xóm.", hieuUng: { thuNhap: 800, tayNghe: 10, gan: 6, tamTrang: -4 } },
           { chu: "🏠 Ở yên trong nhà, tiếp tục công việc trực tuyến", ketQua: "An toàn, công việc không bị gián đoạn, nhưng Minh thấy mình hơi đứng ngoài chuyện của mọi người.", hieuUng: { thuNhap: 200, tayNghe: 2, gan: -5, tamTrang: 6 } }
         ],
@@ -356,12 +356,12 @@ window.MO_RONG = {
         moTa: "Mùa khô đầu năm nắng hạn gay gắt, nhưng cuối năm giá cà phê lên cao chưa từng thấy. Cả buôn rộn ràng vào mùa thu hoạch.",
         luaChon: [
           { chu: "🏍️ Mua xe máy mới, sửa lại nhà ngay", ketQua: "Cả nhà vui, cuộc sống tiện hơn; nhưng nếu năm sau giá xuống thì không có tiền dự phòng.", hieuUng: { thuNhap: 1500, tayNghe: 0, gan: 5, tamTrang: 6 } },
-          { chu: "🔥 Để dành tiền, đầu tư máy sấy, làm cà phê đặc sản", ketQua: "Chưa tiêu được nhiều, nhưng H'Hen bắt đầu có sản phẩm mang tên buôn mình.", hieuUng: { thuNhap: 900, tayNghe: 12, gan: 6, tamTrang: 2 } },
+          { chu: "🔥 Để dành tiền, đầu tư máy sấy, làm cà phê đặc sản", ketQua: "Chưa tiêu được nhiều, nhưng H'Hen bắt đầu có sản phẩm mang tên buôn mình.", hieuUng: { thuNhap: 900, tayNghe: 12, gan: 6, tamTrang: 2 }, dat: "caPheDacSan" },
           { chu: "🌳 Chặt bớt cây ăn quả để trồng thêm cà phê", ketQua: "Thu nhập trước mắt tăng, nhưng nếu giá cà phê giảm thì rủi ro lớn vì \"bỏ hết trứng vào một giỏ\".", hieuUng: { thuNhap: 1800, tayNghe: 2, gan: 2, tamTrang: -2 } }
         ],
         diaLi: "Giá nông sản xuất khẩu phụ thuộc thị trường thế giới, có năm rất cao, có năm rất thấp. Không nên chạy theo giá mà phá bỏ cây trồng khác; đa dạng cây trồng giúp thu nhập ổn định."
       },
-      { dungLai: 5, nam: 2024 }
+      { dungLai: 5, nam: 2024, dat: { 0: "nhomQue" } }
     ],
 
     /* ---------------- TUẤN – ĐÔNG NAM BỘ ---------------- */
@@ -475,6 +475,20 @@ window.MO_RONG = {
 
   /* ======================= KẾT THÚC (xét từ trên xuống) ======================= */
   ketThuc: [
+    /* ----- KẾT THÚC BÍ MẬT: chỉ mở khi đi đúng một tổ hợp lựa chọn đặc biệt ----- */
+    { id: "nguoi-hung", icon: "💙", tieuDe: "Người hùng thầm lặng", biMat: true, skin: "chong-dich",
+      goiY: "Minh · Thời cuộc · hai lần thành phố gặp nạn, đừng đứng ngoài",
+      dieuKien: { nv: "minh", cheDo: "thoiCuoc", co: ["tinhNguyen", "giupBaCon"] },
+      chu: "Năm 2021, Minh đi tình nguyện ở điểm tiêm; năm 2024, Minh lại lội nước giúp bà con sau bão Yagi. Không ai trả lương cho những ngày ấy, nhưng phường trao cho Minh giấy khen, và trung tâm y tế quận mời Minh về làm kĩ thuật viên phụ trách hệ thống máy tính." },
+    { id: "qua-mua-dong", icon: "🎄", tieuDe: "Món quà mùa đông", biMat: true, skin: "giang-sinh",
+      goiY: "H'Hen · Thời cuộc · năm cà phê được giá, đừng vội tiêu hết",
+      dieuKien: { nv: "hhen", cheDo: "thoiCuoc", co: ["caPheDacSan", "nhomQue"] },
+      chu: "Tháng 12/2024, những túi cà phê đặc sản đầu tiên mang tên buôn của H'Hen được đặt mua làm quà Giáng sinh, quà Tết gửi đi khắp nơi. Cả buôn cùng rang, cùng gói hàng tới khuya – lần đầu tiên, người trẻ không phải rời buôn để kiếm việc." },
+    { id: "dem-rung-duoc", icon: "🎃", tieuDe: "Đêm rừng đước", biMat: true, skin: "halloween",
+      goiY: "Út · Bài học · rừng đước không chỉ đẹp ban ngày",
+      dieuKien: { nv: "ut", cheDo: "baiHoc", co: ["duLichRung", "tuKinhDoanh"] },
+      chu: "Út nghĩ ra tour \"Đêm rừng đước\": chèo xuồng xem đom đóm, nghe các cụ kể chuyện ma xứ rừng U Minh. Mùa Halloween năm ấy, các bạn trẻ từ thành phố đặt kín tour – du lịch sinh thái hoá ra cũng là một cách giữ người trẻ ở lại quê." },
+
     { id: "met-moi", icon: "💸", tieuDe: "Kiếm nhiều mà mệt mỏi",
       dieuKien: { tnTu: 1.0, tamTrangDuoi: 45 },
       chu: "{ten} có thu nhập cao hơn mức bình quân của vùng, nhưng những ca làm dài và cuộc sống thiếu cân bằng khiến {ten} kiệt sức. Việc làm tốt không chỉ là lương cao." },

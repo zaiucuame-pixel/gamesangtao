@@ -245,6 +245,7 @@ for (const nv of ND.nhanVat) for (const cd of CHE_DO) for (const c of L.danhSach
    ========================================================= */
 nhom("9. Mô phỏng mọi đường chơi");
 const ketThucDat = new Set();
+const tiLeKt = {};
 for (const nv of ND.nhanVat) {
   const v = ND.vung.find(x => x.id === nv.vung);
   for (const cd of CHE_DO) {
@@ -275,6 +276,7 @@ for (const nv of ND.nhanVat) {
       } else di(i + 1, tt, [...ph, ...them(c.phieu)]);
     })(0, L.trangThaiDau(nv, MR), []);
 
+    tiLeKt[nv.id + ":" + cd] = { kt, soDuong };
     const ds_kt = [...kt.entries()].map(([k, n]) => `${k} ${Math.round(n / soDuong * 100)}%`).join(", ");
     console.log(`  · ${nv.ten.padEnd(6)} ${cd.padEnd(8)} ${String(soDuong).padStart(4)} đường | thu nhập cuối ${min}–${max} | ${ds_kt}`);
     if (min < 0) loi(`${nv.ten} (${cd}): thu nhập âm`);
@@ -286,6 +288,27 @@ for (const nv of ND.nhanVat) {
   }
 }
 for (const k of MR.ketThuc) if (!ketThucDat.has(k.id)) loi(`Kết thúc "${k.tieuDe}" không đường nào đạt được`);
+
+/* =========================================================
+   10. KẾT THÚC BÍ MẬT
+   ========================================================= */
+nhom("10. Kết thúc bí mật");
+for (const k of MR.ketThuc.filter(x => x.biMat)) {
+  const dk = k.dieuKien || {};
+  if (!k.skin || !k.goiY) loi(`Bí mật "${k.tieuDe}": thiếu skin thưởng hoặc gợi ý`);
+  if (!dk.nv || !dk.cheDo || !(dk.co || []).length) { loi(`Bí mật "${k.tieuDe}": phải gắn với 1 nhân vật, 1 chế độ và dấu lựa chọn`); continue; }
+  const nv = ND.nhanVat.find(n => n.id === dk.nv);
+  if (!nv) { loi(`Bí mật "${k.tieuDe}": không có nhân vật ${dk.nv}`); continue; }
+  const coDau = new Set(L.danhSachCanh(nv, dk.cheDo, MR).flatMap(c => (c.luaChon || []).map(l => l.dat).filter(Boolean)));
+  for (const f of dk.co) if (!coDau.has(f)) loi(`Bí mật "${k.tieuDe}": dấu "${f}" không có lựa chọn nào của ${nv.ten} (${dk.cheDo}) gắn – sai chính tả?`);
+  const t = tiLeKt[dk.nv + ":" + dk.cheDo], n = t.kt.get(k.id) || 0, pt = Math.round(n / t.soDuong * 100);
+  console.log(`  · ${k.icon} ${k.tieuDe}: ${pt}% số đường chơi của ${nv.ten} (${dk.cheDo})`);
+  if (!n) loi(`Bí mật "${k.tieuDe}": không đường nào đạt được`);
+  if (pt > 20) loi(`Bí mật "${k.tieuDe}": chiếm ${pt}% – quá dễ, không còn là bất ngờ`);
+  if (k !== MR.ketThuc[MR.ketThuc.indexOf(k)] || MR.ketThuc.findIndex(x => !x.biMat) < MR.ketThuc.indexOf(k)) loi(`Bí mật "${k.tieuDe}": phải đặt trước các kết thúc thường`);
+}
+const skinBiMat = MR.ketThuc.filter(x => x.biMat).map(x => x.skin);
+if (new Set(skinBiMat).size !== skinBiMat.length) loi("Hai kết thúc bí mật trùng skin thưởng");
 
 /* ---------- tổng kết ---------- */
 console.log(`\n${soLoi ? "❌" : "✅"} ${soLoi} lỗi, ${soCanhBao} cảnh báo`);

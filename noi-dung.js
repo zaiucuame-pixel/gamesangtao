@@ -1120,7 +1120,8 @@ window.NOI_DUNG = {
               "nghe": "Công nhân khu công nghiệp"
             },
             {
-              "chu": "🌳 Làm du lịch sinh thái rừng đước",
+              "dat": "duLichRung",
+            "chu": "🌳 Làm du lịch sinh thái rừng đước",
               "ketQua": "Út chèo xuồng đưa khách tham quan rừng ngập mặn, kể chuyện về đất mũi.",
               "hieuUng": {
                 "thuNhap": 1500,
@@ -1245,7 +1246,8 @@ window.NOI_DUNG = {
           "moTa": "Một người quen rủ Út cùng bán sản phẩm thủy sản có nguồn gốc rõ ràng theo đơn đặt trước. Út có thể thử với quy mô nhỏ, hoặc ưu tiên một công việc làm thuê có lịch trả công rõ ràng.",
           "luaChon": [
             {
-              "chu": "Thử bán theo đơn đặt trước với quy mô nhỏ",
+              "dat": "tuKinhDoanh",
+            "chu": "Thử bán theo đơn đặt trước với quy mô nhỏ",
               "ketQua": "Út học cách tìm khách, tính chi phí và phối hợp giao hàng. Trong năm thử nghiệm, thu nhập giảm vì phải dành thời gian xây dựng khách hàng; việc bảo quản vẫn là yêu cầu quan trọng.",
               "hieuUng": {
                 "thuNhap": -200,

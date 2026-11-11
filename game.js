@@ -368,20 +368,29 @@
     { id: "suu-tam", icon: "🏆", ten: "Nhà sưu tầm", mo: "Mở khoá 15 kết thúc trong album",
       tien: () => [Object.keys(luu.album).length, 15], skin: "hoa-ban" },
     { id: "thong-thai", icon: "🧠", ten: "Thông thái", mo: "Trả lời đúng mọi câu hỏi chặn đường trong 3 lượt chơi",
-      tien: () => [luu.thongThai, 3], khung: "vang" }
+      tien: () => [luu.thongThai, 3], khung: "vang" },
+    { id: "tho-san", icon: "🔮", ten: "Thợ săn bí mật", mo: "Tìm ra cả 3 kết thúc bí mật (mỗi cái tặng một skin đặc biệt)",
+      tien: () => [BI_MAT.filter(daTimBiMat).length, BI_MAT.length] }
   ];
+  const BI_MAT = MR.ketThuc.filter(k => k.biMat);
+  function daTimBiMat(k) { return Object.keys(luu.album).some(a => a.endsWith(":" + k.id)); }
+  function skinDaMo(id) {
+    return id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]) || BI_MAT.some(k => k.skin === id && daTimBiMat(k));
+  }
   const SKIN = {
     "mac-dinh": { icon: "🧭", ten: "Mặc định" },
     "lua-chin": { icon: "🌾", ten: "Đồng lúa chín" },
     "pho-co": { icon: "🏮", ten: "Phố cổ về đêm" },
     "bien": { icon: "🌊", ten: "Biển miền Trung" },
-    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc" }
+    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc" },
+    "chong-dich": { icon: "💙", ten: "Tuyến đầu chống dịch" },
+    "giang-sinh": { icon: "🎄", ten: "Giáng sinh" },
+    "halloween": { icon: "🎃", ten: "Halloween" }
   };
-  const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : "✨ khung chân dung vàng";
+  const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : nvu.khung ? "✨ khung chân dung vàng" : "🏅 huy hiệu đặc biệt";
 
   function apSkin() {
-    const moKhoa = id => id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]);
-    const s = SKIN[luu.skin] && moKhoa(luu.skin) ? luu.skin : "mac-dinh";
+    const s = SKIN[luu.skin] && skinDaMo(luu.skin) ? luu.skin : "mac-dinh";
     document.body.dataset.skin = s;
     document.body.dataset.khung = luu.khung === "vang" && luu.huyHieu["thong-thai"] ? "vang" : "";
     const ic = document.querySelector(".logo-icon");
@@ -445,10 +454,11 @@
         <h2>Hồ sơ cuộc đời của ${esc(nv.ten)}</h2>
         <div class="nghe">💼 ${esc(nghe)}</div>
 
-        <div class="ket-thuc">
+        ${kt.biMat ? `<div class="bao-bi-mat">🔮 Bạn đã tìm ra một <b>KẾT THÚC BÍ MẬT</b>!<br>🎁 Nhận huy hiệu ${kt.icon} và skin <b>${SKIN[kt.skin].icon} ${esc(SKIN[kt.skin].ten)}</b> <button class="nut" data-den="album">🎨 Mặc thử ngay</button></div>` : ""}
+        <div class="ket-thuc ${kt.biMat ? "bi-mat" : ""}">
           <div class="kt-icon">${kt.icon}</div>
           <div>
-            <small>${TEN_CHE_DO[cheDo]} · Kết thúc${moiMo ? " <b class='moi'>MỚI!</b>" : ""}</small>
+            <small>${TEN_CHE_DO[cheDo]} · ${kt.biMat ? "Kết thúc bí mật" : "Kết thúc"}${moiMo ? " <b class='moi'>MỚI!</b>" : ""}</small>
             <h3>${esc(kt.tieuDe)}</h3>
             <p>${esc(kt.chu.replaceAll("{ten}", nv.ten))}</p>
             <p class="uoc-mo ${datUocMo ? "dat" : ""}">🌟 Ước mơ “${esc(tl.uocMo.chu)}”: <b>${datUocMo ? "đã thành hiện thực!" : "vẫn còn dang dở"}</b></p>
@@ -483,7 +493,7 @@
       </article>`;
     ganDieuHuong($san);
     document.getElementById("choi-lai").onclick = () => batDau(nv.id);
-    if (moiMo) thongBao(`${kt.icon} Mở khoá kết thúc mới: ${kt.tieuDe}`);
+    if (moiMo) thongBao(kt.biMat ? `🔮 Kết thúc bí mật! Mở khoá skin ${SKIN[kt.skin].ten}` : `${kt.icon} Mở khoá kết thúc mới: ${kt.tieuDe}`);
     lenDau();
   }
 
@@ -492,15 +502,18 @@
      ========================================================= */
   function manAlbum() {
     const hh = NHIEM_VU.map(n =>
-      `<div class="huy-hieu-lon ${luu.huyHieu[n.id] ? "co" : ""}"><span>${n.icon}</span><b>${esc(n.ten)}</b><small>${esc(n.mo)}</small></div>`).join("");
-    const daMo = id => id === "mac-dinh" || NHIEM_VU.some(n => n.skin === id && luu.huyHieu[n.id]);
+      `<div class="huy-hieu-lon ${luu.huyHieu[n.id] ? "co" : ""}"><span>${n.icon}</span><b>${esc(n.ten)}</b><small>${esc(n.mo)}</small></div>`).join("")
+      + BI_MAT.map(k => daTimBiMat(k)
+        ? `<div class="huy-hieu-lon co bi-mat"><span>${k.icon}</span><b>${esc(k.tieuDe)}</b><small>Kết thúc bí mật</small></div>`
+        : `<div class="huy-hieu-lon bi-mat"><span>🔮</span><b>???</b><small>Gợi ý: ${esc(k.goiY)}</small></div>`).join("");
+    const daMo = skinDaMo;
     const skinHtml = Object.entries(SKIN).map(([id, s]) => {
       const nvu = NHIEM_VU.find(n => n.skin === id);
       const mo = daMo(id), dang = (luu.skin || "mac-dinh") === id;
       return `<button class="o-skin ${mo ? "" : "khoa"} ${dang ? "dang-dung" : ""}" data-skin="${id}" ${mo ? "" : "disabled"}>
         <span class="mau-skin skin-${id}"></span>
         <b>${s.icon} ${esc(s.ten)}</b>
-        <small>${dang ? "✔ Đang dùng" : mo ? "Bấm để dùng" : "🔒 " + esc(nvu.ten)}</small>
+        <small>${dang ? "✔ Đang dùng" : mo ? "Bấm để dùng" : nvu ? "🔒 " + esc(nvu.ten) : "🔮 Kết thúc bí mật – " + esc((BI_MAT.find(k => k.skin === id) || {}).goiY || "")}</small>
       </button>`;
     }).join("");
     const coKhung = !!luu.huyHieu["thong-thai"];
@@ -511,7 +524,7 @@
         const o = ketThucCoThe(nv, cd).map(k => {
           const co = luu.album[`${cd}:${nv.id}:${k.id}`];
           tong++; if (co) mo++;
-          return `<div class="o-album ${co ? "mo" : ""}" title="${co ? esc(k.tieuDe) : "Chưa mở khoá"}"><span>${co ? k.icon : "❓"}</span><small>${co ? esc(k.tieuDe) : "???"}</small></div>`;
+          return `<div class="o-album ${co ? "mo" : ""} ${k.biMat ? "bi-mat" : ""}" title="${co ? esc(k.tieuDe) : "Chưa mở khoá"}"><span>${co ? k.icon : k.biMat ? "🔮" : "❓"}</span><small>${co ? esc(k.tieuDe) : k.biMat ? "Bí mật" : "???"}</small></div>`;
         }).join("");
         return `<div class="album-hang"><div class="album-cd">${TEN_CHE_DO[cd]}</div><div class="album-o">${o}</div></div>`;
       }).join("");

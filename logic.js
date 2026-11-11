@@ -56,9 +56,11 @@
 
   /* Điều kiện dạng khai báo: tnTu/tnDuoi (so với bình quân vùng 2024),
      tayNgheTu/Duoi, ganTu/Duoi, tamTrangTu/Duoi, cheDo */
-  L.thoaMan = function (dk, tt, v, cheDo) {
+  L.thoaMan = function (dk, tt, v, cheDo, nv) {
     if (!dk) return true;
     if (dk.cheDo && dk.cheDo !== cheDo) return false;
+    if (dk.nv && (!nv || dk.nv !== nv.id)) return false;
+    if (dk.co && !dk.co.every(f => (tt.co || []).includes(f))) return false;
     const tl = tt.thuNhap / v.tn2024;
     if (dk.tnTu != null && tl < dk.tnTu) return false;
     if (dk.tnDuoi != null && tl >= dk.tnDuoi) return false;
@@ -70,12 +72,12 @@
   };
 
   L.ketThuc = function (tt, nv, v, cheDo, MR) {
-    return MR.ketThuc.find(k => L.thoaMan(k.dieuKien, tt, v, cheDo)) || null;
+    return MR.ketThuc.find(k => L.thoaMan(k.dieuKien, tt, v, cheDo, nv)) || null;
   };
 
   L.uocMoDat = function (tt, nv, v, cheDo, MR) {
     const t = MR.tamLy[nv.id];
-    return !!(t && L.thoaMan(t.uocMo.dieuKien, tt, v, cheDo));
+    return !!(t && L.thoaMan(t.uocMo.dieuKien, tt, v, cheDo, nv));
   };
 
   /* Chọn câu "nghĩ thầm" theo tâm trạng vừa thay đổi */
