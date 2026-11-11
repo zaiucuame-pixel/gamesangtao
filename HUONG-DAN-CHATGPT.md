@@ -74,3 +74,11 @@ anh: { src: "hinh/that/ten-anh.webp", chu: "Chú thích ảnh", nguon: "Nguồn 
 ```
 
 Nên ghi rõ nguồn ảnh. Không dùng ảnh thấy rõ mặt người thật khi chưa được phép.
+
+## 6. Chế độ Thời cuộc và tâm lý nhân vật
+
+Nằm trong `mo-rong.js`. Khi nhờ AI viết thêm:
+- Sự kiện phải là **sự kiện có thật**, có năm, có nguồn báo chí/cơ quan nhà nước. Gửi kèm link nguồn để kiểm chứng.
+- Tâm lý nhân vật phải xuất phát từ **hoàn cảnh** (xa nhà, thiên tai, áp lực…), không gán tính cách cho cả một vùng hay một dân tộc.
+- Mỗi lựa chọn phải "có được có mất". Bộ kiểm tra sẽ báo lỗi nếu một lựa chọn hơn hẳn các lựa chọn khác ở mọi mặt.
+- Sau khi ghép nội dung, chạy `bash kiem-tra/chay.sh`.

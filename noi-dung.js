@@ -90,21 +90,23 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "🎓 Thi đại học ngành Công nghệ thông tin",
-              "ketQua": "Minh đỗ đại học. 4 năm tới chưa có lương, nhưng nền tảng kiến thức rất vững.",
+              "ketQua": "Minh đỗ đại học. 4 năm tới chưa có lương, nhưng nền tảng kiến thức vững và bố mẹ rất vui.",
               "hieuUng": {
                 "thuNhap": 0,
-                "tayNghe": 15,
-                "gan": 0
+                "tayNghe": 20,
+                "gan": 0,
+                "tamTrang": 5
               },
               "nghe": "Sinh viên Công nghệ thông tin"
             },
             {
               "chu": "🔧 Học cao đẳng nghề Cơ điện tử 2 năm",
-              "ketQua": "Vừa học vừa thực tập ở nhà máy, Minh có phụ cấp đầu tiên.",
+              "ketQua": "Vừa học vừa thực tập ở nhà máy, Minh có phụ cấp đầu tiên. Nhưng câu hỏi \"Sao không thi đại học?\" của họ hàng làm Minh chạnh lòng.",
               "hieuUng": {
                 "thuNhap": 2500,
-                "tayNghe": 20,
-                "gan": 0
+                "tayNghe": 15,
+                "gan": 0,
+                "tamTrang": -3
               },
               "nghe": "Học viên nghề Cơ điện tử"
             },
@@ -242,7 +244,7 @@ window.NOI_DUNG = {
               "ketQua": "Chị Thảo tìm được việc ở bếp ăn của một khu công nghiệp, có bảo hiểm xã hội.",
               "hieuUng": {
                 "thuNhap": 0,
-                "tayNghe": 5,
+                "tayNghe": 8,
                 "gan": 5
               },
               "phieuThem": {
@@ -397,12 +399,13 @@ window.NOI_DUNG = {
               }
             },
             {
-              "chu": "⏳ Chờ thương lái lên mua như mọi năm",
-              "ketQua": "Thương lái ép giá vì đường xấu. Thu nhập năm nay giảm.",
+              "chu": "🧳 Tranh thủ xuống xuôi làm thêm mấy tháng mưa",
+              "ketQua": "Có tiền ngay, nhưng nhà thiếu người đúng lúc mưa bão, hàng của gia đình vẫn bị thương lái ép giá.",
               "hieuUng": {
-                "thuNhap": -300,
-                "tayNghe": 0,
-                "gan": 5
+                "thuNhap": 900,
+                "tayNghe": 2,
+                "gan": -10,
+                "tamTrang": -3
               }
             }
           ],
@@ -768,20 +771,21 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "💧 Góp vốn cùng các hộ làm hệ thống tưới nhỏ giọt",
-              "ketQua": "Vườn vẫn đủ nước, cây không bị chết.",
+              "ketQua": "Phải bỏ vốn trước nên năm nay chật vật, nhưng vườn vẫn đủ nước và những năm sau đỡ lo hơn.",
               "hieuUng": {
-                "thuNhap": 300,
+                "thuNhap": -300,
                 "tayNghe": 10,
                 "gan": 5
               }
             },
             {
-              "chu": "🤷 Tưới như cũ, chờ mưa",
-              "ketQua": "Một phần vườn bị khô héo, thu nhập giảm mạnh.",
+              "chu": "🌾 Để vườn tự chịu hạn, H'Hen đi làm thuê ở thị trấn",
+              "ketQua": "Có tiền công đều, nhưng một phần vườn cà phê héo vì thiếu nước.",
               "hieuUng": {
-                "thuNhap": -800,
-                "tayNghe": 0,
-                "gan": 0
+                "thuNhap": 400,
+                "tayNghe": 3,
+                "gan": -6,
+                "tamTrang": -3
               }
             }
           ],
@@ -908,11 +912,12 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "🏭 Vào làm công nhân dây chuyền ngay",
-              "ketQua": "Có lương ngay, tăng ca nhiều thì thu nhập khá.",
+              "ketQua": "Có lương ngay, tăng ca nhiều thì thu nhập khá, nhưng ca 12 tiếng làm Tuấn kiệt sức.",
               "hieuUng": {
                 "thuNhap": 4000,
                 "tayNghe": 5,
-                "gan": 0
+                "gan": 0,
+                "tamTrang": -6
               },
               "nghe": "Công nhân dây chuyền"
             },
@@ -921,7 +926,7 @@ window.NOI_DUNG = {
               "ketQua": "Hai năm chỉ có tiền làm thêm, nhưng ra trường có tay nghề vững.",
               "hieuUng": {
                 "thuNhap": 1500,
-                "tayNghe": 25,
+                "tayNghe": 20,
                 "gan": 0
               },
               "nghe": "Kĩ thuật viên cơ điện tử"
@@ -932,7 +937,8 @@ window.NOI_DUNG = {
               "hieuUng": {
                 "thuNhap": 4500,
                 "tayNghe": 0,
-                "gan": 0
+                "gan": 0,
+                "tamTrang": -4
               },
               "nghe": "Tài xế giao hàng"
             }
@@ -952,20 +958,22 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "🤖 Đăng kí khoá học vận hành máy tự động",
-              "ketQua": "Tuấn trở thành người vận hành robot, lương tăng.",
+              "ketQua": "Vừa làm vừa học rất áp lực, nhưng sau khoá học Tuấn được giao vận hành robot, lương tăng.",
               "hieuUng": {
-                "thuNhap": 2000,
+                "thuNhap": 800,
                 "tayNghe": 15,
-                "gan": 0
+                "gan": 0,
+                "tamTrang": -6
               }
             },
             {
-              "chu": "📦 Chuyển sang việc bốc xếp kho, không cần học thêm",
-              "ketQua": "Vẫn có việc, nhưng lương giảm và công việc nặng nhọc.",
+              "chu": "🏠 Nghỉ việc, về phụ cửa hàng nhỏ của gia đình",
+              "ketQua": "Thu nhập giảm, ít học được kĩ thuật mới, nhưng Tuấn được gần gia đình và bớt áp lực.",
               "hieuUng": {
-                "thuNhap": -1000,
-                "tayNghe": 0,
-                "gan": 0
+                "thuNhap": -500,
+                "tayNghe": 3,
+                "gan": 10,
+                "tamTrang": 2
               }
             }
           ],
@@ -1060,7 +1068,8 @@ window.NOI_DUNG = {
               "hieuUng": {
                 "thuNhap": 800,
                 "tayNghe": 11,
-                "gan": -8
+                "gan": -8,
+                "tamTrang": -6
               },
               "nghe": "Nhân viên làm việc theo ca"
             }
@@ -1136,20 +1145,22 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "🤝 Vào hợp tác xã, cùng bán cho nhà máy chế biến xuất khẩu",
-              "ketQua": "Giá ổn định theo hợp đồng, có kĩ sư hướng dẫn nuôi đạt chuẩn.",
+              "ketQua": "Giá ổn định theo hợp đồng, có kĩ sư hướng dẫn nuôi đạt chuẩn; bù lại phải góp vốn và theo quy trình nghiêm ngặt.",
               "hieuUng": {
-                "thuNhap": 800,
+                "thuNhap": 400,
                 "tayNghe": 10,
-                "gan": 5
+                "gan": 5,
+                "tamTrang": -2
               }
             },
             {
-              "chu": "💸 Bán vội cho thương lái",
-              "ketQua": "Có tiền ngay nhưng lãi rất ít.",
+              "chu": "🛵 Tự chở tôm ra chợ đầu mối bán lẻ",
+              "ketQua": "Bán được giá hơn thương lái, nhưng Út phải dậy từ 3 giờ sáng, mệt rã rời.",
               "hieuUng": {
-                "thuNhap": -200,
-                "tayNghe": 0,
-                "gan": 0
+                "thuNhap": 700,
+                "tayNghe": 3,
+                "gan": 2,
+                "tamTrang": -6
               }
             }
           ],
