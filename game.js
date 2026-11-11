@@ -511,7 +511,7 @@
       const nvu = NHIEM_VU.find(n => n.skin === id);
       const mo = daMo(id), dang = (luu.skin || "mac-dinh") === id;
       return `<button class="o-skin ${mo ? "" : "khoa"} ${dang ? "dang-dung" : ""}" data-skin="${id}" ${mo ? "" : "disabled"}>
-        <span class="mau-skin skin-${id}"></span>
+        <span class="mau-skin" data-skin="${id}"><i class="mx-dau"></i><i class="mx-bia"></i><i class="mx-chu"></i><i class="mx-nut"></i></span>
         <b>${s.icon} ${esc(s.ten)}</b>
         <small>${dang ? "✔ Đang dùng" : mo ? "Bấm để dùng" : nvu ? "🔒 " + esc(nvu.ten) : "🔮 Kết thúc bí mật – " + esc((BI_MAT.find(k => k.skin === id) || {}).goiY || "")}</small>
       </button>`;

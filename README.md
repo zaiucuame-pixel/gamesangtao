@@ -43,6 +43,7 @@ bash kiem-tra/chay.sh
 ```
 
 - `kiem-tra/kiem-tra.js` (chỉ cần Node): số liệu đúng Bảng 4 SGK; sự kiện đúng năm, đúng vùng, đúng con số và nguồn đã kiểm chứng; không "lệch thời gian" (nhắc COVID trước 2020, nhắc năm chưa tới…); chế độ Bài học không lẫn biến cố; không có lựa chọn "hiển nhiên" hơn hẳn mọi mặt; mô phỏng **mọi** đường chơi để chắc chắn chỉ số hợp lý và kết thúc đủ đa dạng.
+- `kiem-tra/tham-my.py` (cần Playwright): đo độ tương phản chữ/nền theo chuẩn WCAG trên cả 8 skin, mọi màn hình; `--anh THU_MUC` để chụp ảnh so sánh.
 - `kiem-tra/choi-thu.py` (cần Playwright): bot chơi thử cả 2 chế độ × 6 nhân vật trên khung điện thoại và máy tính, báo lỗi JavaScript, ảnh hỏng, tràn màn hình.
 
 Muốn thêm sự kiện mới: thêm vào `suKien` trong `mo-rong.js` **và** vào danh sách `SU_THAT` trong `kiem-tra/kiem-tra.js` (kèm nguồn đã đọc), nếu không bộ kiểm tra sẽ báo lỗi.

@@ -5,4 +5,7 @@ echo "=== KIỂM TRA NỘI DUNG & LOGIC ==="
 node kiem-tra/kiem-tra.js || exit 1
 echo
 echo "=== CHƠI THỬ TRÊN TRÌNH DUYỆT ==="
-python3 kiem-tra/choi-thu.py
+python3 kiem-tra/choi-thu.py || exit 1
+echo
+echo "=== THẨM MỸ SKIN (độ tương phản) ==="
+python3 kiem-tra/tham-my.py
