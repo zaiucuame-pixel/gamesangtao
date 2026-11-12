@@ -44,7 +44,7 @@
     tt.tayNghe = kep(tt.tayNghe + (hu.tayNghe || 0), 0, 100);
     tt.gan = kep(tt.gan + (hu.gan || 0), 0, 100);
     tt.tamTrang = kep(tt.tamTrang + dm, 0, 100);
-    if (dat) tt.co = [...(tt.co || []), dat];
+    if (dat) tt.co = [...(tt.co || []), ...[].concat(dat)];
     return dm;
   };
 
@@ -55,12 +55,17 @@
   };
 
   /* Điều kiện dạng khai báo: tnTu/tnDuoi (so với bình quân vùng 2024),
-     tayNgheTu/Duoi, ganTu/Duoi, tamTrangTu/Duoi, cheDo */
+     tayNgheTu/Duoi, ganTu/Duoi, tamTrangTu/Duoi, cheDo, nv, co, demTu.
+     Có thể là mảng nhiều điều kiện: thoả một trong số đó là được. */
   L.thoaMan = function (dk, tt, v, cheDo, nv) {
     if (!dk) return true;
+    /* Mảng điều kiện = chỉ cần thoả một trong số đó */
+    if (Array.isArray(dk)) return dk.some(d => L.thoaMan(d, tt, v, cheDo, nv));
     if (dk.cheDo && dk.cheDo !== cheDo) return false;
     if (dk.nv && (!nv || dk.nv !== nv.id)) return false;
     if (dk.co && !dk.co.every(f => (tt.co || []).includes(f))) return false;
+    /* demTu: { diXa: 2 } = dấu "diXa" phải xuất hiện ít nhất 2 lần */
+    if (dk.demTu) for (const [f, n] of Object.entries(dk.demTu)) if ((tt.co || []).filter(x => x === f).length < n) return false;
     const tl = tt.thuNhap / v.tn2024;
     if (dk.tnTu != null && tl < dk.tnTu) return false;
     if (dk.tnDuoi != null && tl >= dk.tnDuoi) return false;

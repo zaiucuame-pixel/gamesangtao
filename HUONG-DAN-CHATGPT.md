@@ -82,3 +82,14 @@ Nằm trong `mo-rong.js`. Khi nhờ AI viết thêm:
 - Tâm lý nhân vật phải xuất phát từ **hoàn cảnh** (xa nhà, thiên tai, áp lực…), không gán tính cách cho cả một vùng hay một dân tộc.
 - Mỗi lựa chọn phải "có được có mất". Bộ kiểm tra sẽ báo lỗi nếu một lựa chọn hơn hẳn các lựa chọn khác ở mọi mặt.
 - Sau khi ghép nội dung, chạy `bash kiem-tra/chay.sh`.
+- **Hai chế độ phải có tình huống khác nhau.** Thời cuộc không được dùng lại (`dungLai`) hay chép tình huống, lựa chọn của Bài học. Bộ kiểm tra (mục 13) sẽ báo lỗi.
+- **Sau mỗi tình huống phải có phần bài học (`diaLi`) bám nội dung Bài 4**, tức là phải nói tới việc làm, thất nghiệp, thu nhập, lao động, di cư hoặc phân hoá thu nhập (mục 14). Với câu hỏi, phần bài học là `giaiThich` + `diaLi`.
+
+## 7. Dấu "đi xa" và kết thúc Lao động xa xứ
+
+Lựa chọn nào khiến nhân vật **rời tỉnh / ra nước ngoài đi làm** thì gắn `dat: "diXa"`. Nếu đó là quyết định ở **năm cuối** (nhân vật ở lại nơi xa) thì gắn `dat: ["diXa", "xaQue"]`.
+
+Kết thúc 🧳 *Lao động xa xứ* xảy ra khi nhân vật đi xa ở năm cuối, hoặc đã rời quê đi làm ít nhất 2 lần. Bộ kiểm tra (mục 12) còn đòi hỏi:
+- Chọn đi xa ở năm cuối thì không được ra "Người giữ lửa quê hương".
+- Nhân vật ở vùng xuất cư (TD&MN Bắc Bộ, Bắc Trung Bộ, ĐB sông Cửu Long) phải gặp được kết thúc xa xứ ở chế độ Bài học.
+- Không kết thúc nào chiếm quá 60% số đường của một nhân vật, hay quá 40% của cả một chế độ; kết thúc thường nào cũng phải có ít nhất 1% số đường.

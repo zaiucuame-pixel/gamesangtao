@@ -299,7 +299,7 @@ for (const k of MR.ketThuc.filter(x => x.biMat)) {
   if (!dk.nv || !dk.cheDo || !(dk.co || []).length) { loi(`Bí mật "${k.tieuDe}": phải gắn với 1 nhân vật, 1 chế độ và dấu lựa chọn`); continue; }
   const nv = ND.nhanVat.find(n => n.id === dk.nv);
   if (!nv) { loi(`Bí mật "${k.tieuDe}": không có nhân vật ${dk.nv}`); continue; }
-  const coDau = new Set(L.danhSachCanh(nv, dk.cheDo, MR).flatMap(c => (c.luaChon || []).map(l => l.dat).filter(Boolean)));
+  const coDau = new Set(L.danhSachCanh(nv, dk.cheDo, MR).flatMap(c => (c.luaChon || []).flatMap(l => [].concat(l.dat || []))));
   for (const f of dk.co) if (!coDau.has(f)) loi(`Bí mật "${k.tieuDe}": dấu "${f}" không có lựa chọn nào của ${nv.ten} (${dk.cheDo}) gắn – sai chính tả?`);
   const t = tiLeKt[dk.nv + ":" + dk.cheDo], n = t.kt.get(k.id) || 0, pt = Math.round(n / t.soDuong * 100);
   console.log(`  · ${k.icon} ${k.tieuDe}: ${pt}% số đường chơi của ${nv.ten} (${dk.cheDo})`);
@@ -355,6 +355,83 @@ console.log("\n11. Mã lưu game");
   if (dai > 48) loi(`Mã lưu dài ${dai} kí tự – quá dài để chép tay`);
   for (const x of ["", "abc", "GS1-", "GS1-0000"]) { try { M.doc(x); loi(`Mã rác "${x}" vẫn được nhận`); } catch (e) { /* đúng */ } }
 }
+
+/* =========================================================
+   12. CÂN BẰNG & HỢP LÝ CỦA KẾT THÚC
+   ========================================================= */
+nhom("12. Cân bằng và hợp lý của kết thúc");
+/* Lựa chọn "đi định cư xa" ở cảnh cuối, nhận diện bằng chữ (độc lập với dấu trong nội dung) */
+const DI_XA = /Nhật|ngoài tỉnh|ở đô thị|xuống xuôi|lên Bình Dương|lên thành phố/i;
+/* Vùng xuất cư mạnh trong bài học: người chơi phải có thể gặp kết thúc "Lao động xa xứ" ở chế độ Bài học */
+const VUNG_XUAT_CU = ["TDMN", "BTB", "DBSCL"];
+const KT_THUONG = MR.ketThuc.filter(k => !k.biMat).map(k => k.id);
+const tongToanGame = {}; let soDuongToanGame = 0;
+for (const cd of CHE_DO) {
+  const tongCd = {}; let soDuongCd = 0;
+  for (const nv of ND.nhanVat) {
+    const v = ND.vung.find(x => x.id === nv.vung);
+    const ds = L.danhSachCanh(nv, cd, MR);
+    const iCuoi = ds.map(c => !!c.luaChon).lastIndexOf(true);
+    const dem = {}; let n = 0, viPham = 0;
+    (function di(i, tt, chonCuoi) {
+      if (i === ds.length) {
+        const k = L.ketThuc(tt, nv, v, cd, MR); if (!k) return;
+        n++; dem[k.id] = (dem[k.id] || 0) + 1;
+        if (chonCuoi && DI_XA.test(chonCuoi.chu) && k.id === "giu-lua") viPham++;
+        return;
+      }
+      const c = ds[i];
+      if (c.luaChon) c.luaChon.forEach(l => { const t2 = { ...tt }; L.apDung(t2, nv, l.hieuUng, MR, l.dat); di(i + 1, t2, i === iCuoi ? l : chonCuoi); });
+      else if (c.loai === "cauHoi") { const t2 = { ...tt }; L.apDung(t2, nv, c.thuong, MR); di(i + 1, t2, chonCuoi); di(i + 1, { ...tt }, chonCuoi); }
+      else di(i + 1, tt, chonCuoi);
+    })(0, L.trangThaiDau(nv, MR), null);
+    if (viPham) loi(`${nv.ten} (${cd}): ${viPham} đường chọn đi xa ở năm cuối mà vẫn ra "Người giữ lửa quê hương"`);
+    for (const [k, x] of Object.entries(dem)) if (x / n > 0.6) loi(`${nv.ten} (${cd}): kết thúc "${k}" chiếm ${Math.round(x / n * 100)}% (tối đa 60%)`);
+    if (cd === "baiHoc" && VUNG_XUAT_CU.includes(nv.vung) && !dem["xa-xu"]) loi(`${nv.ten} (vùng xuất cư ${nv.vung}): chế độ Bài học không đường nào ra "Lao động xa xứ"`);
+    for (const [k, x] of Object.entries(dem)) { tongCd[k] = (tongCd[k] || 0) + x; tongToanGame[k] = (tongToanGame[k] || 0) + x; }
+    soDuongCd += n; soDuongToanGame += n;
+  }
+  const bang = Object.entries(tongCd).sort((a, b) => b[1] - a[1]).map(([k, x]) => `${k} ${(x / soDuongCd * 100).toFixed(1)}%`).join(", ");
+  console.log(`  · ${cd.padEnd(8)} ${soDuongCd} đường | ${bang}`);
+  for (const [k, x] of Object.entries(tongCd)) if (x / soDuongCd > 0.4) loi(`Chế độ ${cd}: kết thúc "${k}" chiếm ${Math.round(x / soDuongCd * 100)}% (tối đa 40%)`);
+}
+for (const k of KT_THUONG) {
+  const x = tongToanGame[k] || 0;
+  if (x / soDuongToanGame < 0.01) loi(`Kết thúc "${k}" chỉ có ${x}/${soDuongToanGame} đường (cần ≥1%) – gần như không ai gặp`);
+}
+
+/* =========================================================
+   13. HAI CHẾ ĐỘ PHẢI CÓ TÌNH HUỐNG KHÁC NHAU
+   ========================================================= */
+nhom("13. Bài học và Thời cuộc không dùng chung tình huống");
+const vanTay = c => [c.tieuDe, c.moTa, c.cauHoi].filter(Boolean).map(x => x.trim().toLowerCase()).join("|");
+for (const nv of ND.nhanVat) {
+  const baiHoc = new Map(nv.canh.map(c => [vanTay(c), c]));
+  const chuBaiHoc = new Set(nv.canh.flatMap(c => (c.luaChon || []).map(l => l.chu.trim())));
+  L.danhSachCanh(nv, "thoiCuoc", MR).forEach((c, i) => {
+    if (c.dungLai != null) loi(`${nv.ten} (thoiCuoc #${i + 1}): dùng lại cảnh "${c.tieuDe}" của chế độ Bài học`);
+    else if (baiHoc.has(vanTay(c))) loi(`${nv.ten} (thoiCuoc #${i + 1}): cảnh "${c.tieuDe}" trùng nội dung với Bài học`);
+    else if (c.moTa && nv.canh.some(b => b.moTa === c.moTa)) loi(`${nv.ten} (thoiCuoc #${i + 1}): mô tả trùng với Bài học`);
+    for (const l of c.luaChon || []) if (chuBaiHoc.has(l.chu.trim())) loi(`${nv.ten} (thoiCuoc #${i + 1}): lựa chọn "${l.chu}" trùng với Bài học`);
+  });
+}
+
+/* =========================================================
+   14. SAU MỖI TÌNH HUỐNG CÓ PHẦN BÀI HỌC GẮN BÀI 4
+   ========================================================= */
+nhom("14. Phần bài học sau mỗi tình huống bám nội dung Bài 4");
+/* Nội dung chính Bài 4: vấn đề việc làm (thất nghiệp, thiếu việc làm, giải pháp) và phân hoá thu nhập theo vùng */
+const Y_CHINH_BAI_4 = /việc làm|thất nghiệp|thu nhập|lao động|di cư|phân ho[áa]|mưu sinh/i;
+for (const nv of ND.nhanVat) for (const cd of CHE_DO) L.danhSachCanh(nv, cd, MR).forEach((c, i) => {
+  const ten = `${nv.ten} (${cd} #${i + 1} "${c.tieuDe}")`;
+  const baiHocCanh = c.loai === "cauHoi" ? [c.giaiThich, c.diaLi].filter(Boolean).join(" ") : (c.diaLi || "");
+  const dsBaiHoc = c.luaChon ? c.luaChon.map(l => l.diaLi || baiHocCanh) : [baiHocCanh];
+  dsBaiHoc.forEach((t, j) => {
+    const nhan = c.luaChon ? `${ten} – lựa chọn ${j + 1}` : ten;
+    if (!t || t.length < 60) loi(`${nhan}: thiếu phần bài học sau tình huống (hoặc quá ngắn)`);
+    else if (!Y_CHINH_BAI_4.test(t)) loi(`${nhan}: phần bài học chưa nói tới việc làm/thu nhập – "${t.slice(0, 70)}…"`);
+  });
+});
 
 /* ---------- tổng kết ---------- */
 console.log(`\n${soLoi ? "❌" : "✅"} ${soLoi} lỗi, ${soCanhBao} cảnh báo`);

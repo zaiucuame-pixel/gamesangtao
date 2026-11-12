@@ -291,6 +291,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "✈️ Đi làm việc ở Nhật Bản theo hợp đồng 3 năm",
+              "dat": ["diXa", "xaQue"],
               "ketQua": "Thu nhập rất cao để gửi về gia đình, nhưng xa nhà, phải học tiếng Nhật vất vả.",
               "hieuUng": {
                 "thuNhap": 9000,
@@ -357,6 +358,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "🏭 Xuống khu công nghiệp làm công nhân",
+              "dat": "diXa",
               "ketQua": "Lương cao hơn hẳn, nhưng phải ở trọ xa nhà, ca làm dài.",
               "hieuUng": {
                 "thuNhap": 3500,
@@ -504,6 +506,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "Đi làm ngoài tỉnh để tích lũy thêm",
+              "dat": ["diXa", "xaQue"],
               "ketQua": "Páo tăng thu nhập và tiếp xúc với cách tổ chức công việc mới. Đổi lại, Páo tiếp tục xa nhà và phải dành một phần tiền cho sinh hoạt, đi lại.",
               "hieuUng": {
                 "thuNhap": 800,
@@ -550,6 +553,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "✈️ Học tiếng Nhật, đi làm việc ở nước ngoài theo hợp đồng",
+              "dat": "diXa",
               "ketQua": "Một năm học vất vả, sau đó Lan sang Nhật làm việc, gửi tiền về xây nhà cho bố mẹ.",
               "hieuUng": {
                 "thuNhap": 6000,
@@ -668,6 +672,7 @@ window.NOI_DUNG = {
           ],
           "dung": 0,
           "giaiThich": "Bắc Trung Bộ tăng từ 903 lên 4.630 nghìn đồng, gấp khoảng 5,1 lần – nhanh nhất cả nước. (Cách tính: 4.630 ÷ 903 ≈ 5,1.) Năm 2010 đây còn là vùng thấp nhất!",
+          "diaLi": "Thu nhập bình quân của Bắc Trung Bộ tăng nhanh nhờ các khu kinh tế, khu công nghiệp ven biển tạo thêm nhiều việc làm phi nông nghiệp.",
           "thuong": {
             "thuNhap": 300,
             "tayNghe": 5
@@ -691,6 +696,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "Tìm cơ hội ở đô thị",
+              "dat": ["diXa", "xaQue"],
               "ketQua": "Lan tìm được việc có thu nhập cao hơn và nhiều nhiệm vụ mới. Lan phải thích nghi với cạnh tranh tuyển dụng và cuộc sống xa quê.",
               "hieuUng": {
                 "thuNhap": 800,
@@ -737,6 +743,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "🏖️ Xuống thành phố biển làm lễ tân khách sạn",
+              "dat": "diXa",
               "ketQua": "H'Hen học tiếng Anh giao tiếp, mùa du lịch có thêm tiền thưởng.",
               "hieuUng": {
                 "thuNhap": 2000,
@@ -1041,6 +1048,7 @@ window.NOI_DUNG = {
           ],
           "dung": 0,
           "giaiThich": "Đông Nam Bộ tăng thêm 4.656 nghìn đồng – nhiều thứ hai về số tuyệt đối. Nhưng vì xuất phát cao (2.212 nghìn đồng năm 2010) nên tính theo số lần (6.868 ÷ 2.212 ≈ 3,1) lại thấp nhất. Khi nhận xét bảng số liệu, nhớ phân biệt tăng thêm bao nhiêu và tăng gấp bao nhiêu lần!",
+          "diaLi": "Thu nhập bình quân của Đông Nam Bộ vẫn cao nhất cả nước vì vùng tập trung nhiều việc làm trong công nghiệp và dịch vụ.",
           "thuong": {
             "thuNhap": 300,
             "tayNghe": 5
@@ -1111,6 +1119,7 @@ window.NOI_DUNG = {
             },
             {
               "chu": "🚌 Lên Đông Nam Bộ làm công nhân",
+              "dat": "diXa",
               "ketQua": "Lương cao hơn ở quê, nhưng phải ở trọ, xa gia đình.",
               "hieuUng": {
                 "thuNhap": 3500,
@@ -1200,6 +1209,7 @@ window.NOI_DUNG = {
           "luaChon": [
             {
               "chu": "Đi làm ngoài tỉnh",
+              "dat": "diXa",
               "ketQua": "Út tăng thu nhập và học cách làm việc trong môi trường mới. Đổi lại, Út phải thuê chỗ ở, xa gia đình và sắp xếp chi phí về quê.",
               "hieuUng": {
                 "thuNhap": 800,
