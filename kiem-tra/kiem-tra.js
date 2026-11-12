@@ -310,6 +310,52 @@ for (const k of MR.ketThuc.filter(x => x.biMat)) {
 const skinBiMat = MR.ketThuc.filter(x => x.biMat).map(x => x.skin);
 if (new Set(skinBiMat).size !== skinBiMat.length) loi("Hai kết thúc bí mật trùng skin thưởng");
 
+/* ---------- 11. Mã lưu game ---------- */
+console.log("\n11. Mã lưu game");
+{
+  const MA_LUU = require(path.join(GOC, "ma-luu.js"));
+  const gjs = fs.readFileSync(path.join(GOC, "game.js"), "utf8");
+  const HH = [...gjs.slice(gjs.indexOf("const NHIEM_VU"), gjs.indexOf("const BI_MAT")).matchAll(/\{ id: "([^"]+)"/g)].map(m => m[1]);
+  const SK = [...gjs.slice(gjs.indexOf("const SKIN = {"), gjs.indexOf("const phanThuong")).matchAll(/^\s+"([a-z-]+)": \{/gm)].map(m => m[1]);
+  const M = MA_LUU.tao(ND, MR, L, { huyHieu: HH, skin: SK });
+  // Mã "đủ đồ" ghi trong README phải còn dùng được: đổi danh sách kết thúc/phiếu/skin là mã cũ hỏng
+  const MA_GIOI_THIEU = (fs.readFileSync(path.join(GOC, "README.md"), "utf8").match(/GS1-[0-9A-Z-]+/) || [])[0];
+  if (!MA_GIOI_THIEU) loi("README chưa ghi mã lưu giới thiệu (GS1-…)");
+  else {
+    try {
+      const r = M.doc(MA_GIOI_THIEU);
+      if (Object.keys(r.album).length !== M.soAlbum) loi("Mã giới thiệu không mở đủ album");
+    } catch (e) { loi(`Mã giới thiệu trong README không dùng được nữa (${e.message}) – nội dung đã đổi, hãy tạo lại mã`); }
+  }
+  // Khứ hồi: mọi kiểu tiến độ ngẫu nhiên → mã → tiến độ y hệt
+  let ngau = 7; const r01 = () => (ngau = (ngau * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const du = M.dayDu("halloween"), khoaA = Object.keys(du.album), khoaD = Object.keys(du.daChoi);
+  let sai = 0;
+  for (let lan = 0; lan < 300; lan++) {
+    const t = { album: {}, daChoi: {}, uocMo: {}, huyHieu: {}, phieu: du.phieu.filter(() => r01() < .5),
+      thongThai: Math.floor(r01() * 5), skin: SK[Math.floor(r01() * SK.length)], khung: r01() < .5 ? "vang" : "" };
+    khoaA.forEach(k => { if (r01() < .3) t.album[k] = true; });
+    khoaD.forEach(k => { if (r01() < .5) t.daChoi[k] = { khoiPhuc: true }; });
+    ND.nhanVat.forEach(n => { if (r01() < .4) t.uocMo[n.id] = true; });
+    HH.forEach(h => { if (r01() < .4) t.huyHieu[h] = true; });
+    const m = M.ma(t), r = M.doc(m), r2 = M.doc(m.toLowerCase().replace(/0/g, "o").replace(/-/g, " "));
+    const so = x => JSON.stringify([Object.keys(x.album).sort(), Object.keys(x.daChoi).sort(), Object.keys(x.uocMo).sort(),
+      Object.keys(x.huyHieu).sort(), x.phieu.map(p => p.chu).sort(), x.thongThai, x.skin, x.khung]);
+    if (so(r) !== so(t) || so(r2) !== so(t)) sai++;
+    // chép nhầm 1 kí tự phải bị phát hiện (trừ kí tự cuối chỉ chứa bit đệm)
+    const vt = 4 + Math.floor(r01() * (m.length - 6));
+    if (m[vt] !== "-") {
+      const doi = m.slice(0, vt) + (m[vt] === "Z" ? "Y" : "Z") + m.slice(vt + 1);
+      try { M.doc(doi); sai++; } catch (e) { /* đúng: bị phát hiện */ }
+    }
+  }
+  if (sai) loi(`Mã lưu: ${sai}/300 lần thử không khôi phục đúng hoặc không phát hiện chép nhầm`);
+  const dai = M.ma(du).length;
+  console.log(`  · ${M.soAlbum} kết thúc, ${M.soPhieu} phiếu → mã dài ${dai} kí tự`);
+  if (dai > 48) loi(`Mã lưu dài ${dai} kí tự – quá dài để chép tay`);
+  for (const x of ["", "abc", "GS1-", "GS1-0000"]) { try { M.doc(x); loi(`Mã rác "${x}" vẫn được nhận`); } catch (e) { /* đúng */ } }
+}
+
 /* ---------- tổng kết ---------- */
 console.log(`\n${soLoi ? "❌" : "✅"} ${soLoi} lỗi, ${soCanhBao} cảnh báo`);
 process.exit(soLoi ? 1 : 0);

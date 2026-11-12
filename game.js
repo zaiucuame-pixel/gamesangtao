@@ -90,16 +90,7 @@
   const _ktCoThe = {};
   function ketThucCoThe(nv, cd) {
     const k = nv.id + ":" + cd;
-    if (_ktCoThe[k]) return _ktCoThe[k];
-    const ds = L.danhSachCanh(nv, cd, MR), v = VUNG[nv.vung], out = new Set();
-    (function di(i, t) {
-      if (i === ds.length) { const e = L.ketThuc(t, nv, v, cd, MR); if (e) out.add(e.id); return; }
-      const c = ds[i];
-      if (c.luaChon) c.luaChon.forEach(l => { const t2 = { ...t }; L.apDung(t2, nv, l.hieuUng, MR, l.dat); di(i + 1, t2); });
-      else if (c.loai === "cauHoi") { const t2 = { ...t }; L.apDung(t2, nv, c.thuong, MR); di(i + 1, t2); di(i + 1, { ...t }); }
-      else di(i + 1, t);
-    })(0, L.trangThaiDau(nv, MR));
-    return (_ktCoThe[k] = MR.ketThuc.filter(e => out.has(e.id)));
+    return _ktCoThe[k] || (_ktCoThe[k] = L.ketThucCoThe(nv, VUNG[nv.vung], cd, MR));
   }
 
   /* =========================================================
@@ -422,6 +413,40 @@
     "giang-sinh": { icon: "🎄", ten: "Giáng sinh", hat: ["❄️", "❄️", "⭐", "❄️"] },
     "halloween": { icon: "🎃", ten: "Halloween", hat: ["🦇", "🍂", "🦇", "🕸️"] }
   };
+  /* Mã lưu game: thứ tự huy hiệu và skin ở trên KHÔNG được đổi, nếu không mã cũ sẽ hỏng */
+  const MA = window.MA_LUU.tao(ND, MR, L, { huyHieu: NHIEM_VU.map(n => n.id), skin: Object.keys(SKIN) });
+  function htmlMaLuu() {
+    return `<div class="ma-luu">
+      <p class="ghi-chu">Chép mã này lại (vào vở, chụp ảnh…). Sang máy khác, dán mã vào ô bên dưới là lấy lại đủ huy chương, skin, album.</p>
+      <div class="ma-hang"><output class="ma-hien" id="ma-hien">${esc(MA.ma(luu))}</output><button class="nut" id="ma-chep">📋 Chép</button></div>
+      <form class="ma-hang" id="ma-form"><input id="ma-nhap" placeholder="Dán mã lưu, vd. GS1-…" autocapitalize="characters" spellcheck="false" autocomplete="off" aria-label="Mã lưu"><button class="nut phu" type="submit">📥 Nhập mã</button></form>
+      <p class="tk-loi" id="ma-loi" role="alert"></p>
+    </div>`;
+  }
+  function nhapMa(chuoi) {
+    const moi = MA.doc(chuoi);   // ném lỗi tiếng Việt nếu mã sai
+    const truoc = Object.keys(luu.album).length;
+    luu = gop(luu, moi);
+    kiemNhiemVu(); ghiLuu(luu); apSkin();
+    return Object.keys(luu.album).length - truoc;
+  }
+  function ganMaLuu(goc, sauKhiNhap) {
+    const chep = goc.querySelector("#ma-chep"), form = goc.querySelector("#ma-form");
+    if (chep) chep.onclick = async () => {
+      const ma = goc.querySelector("#ma-hien").textContent;
+      try { await navigator.clipboard.writeText(ma); thongBao("📋 Đã chép mã lưu"); }
+      catch (e) { const r = document.createRange(); r.selectNodeContents(goc.querySelector("#ma-hien")); getSelection().removeAllRanges(); getSelection().addRange(r); thongBao("Bôi đen sẵn rồi – bấm giữ để sao chép"); }
+    };
+    if (form) form.onsubmit = e => {
+      e.preventDefault();
+      try {
+        const them = nhapMa(goc.querySelector("#ma-nhap").value);
+        thongBao(`📥 Đã nhập mã lưu${them ? ` – thêm ${them} kết thúc` : ""}!`);
+        sauKhiNhap();
+      } catch (err) { goc.querySelector("#ma-loi").textContent = err.message; }
+    };
+  }
+
   const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : nvu.khung ? "✨ khung chân dung vàng" : "🏅 huy hiệu đặc biệt";
 
   function apSkin() {
@@ -599,6 +624,7 @@
           ✨ Khung chân dung vàng ${coKhung ? "" : "<small>🔒 Hoàn thành nhiệm vụ Thông thái</small>"}
         </label>
       </article>
+      <article class="the buoc" id="the-ma-luu"><h2>💾 Mã lưu game</h2>${htmlMaLuu()}</article>
       <article class="the buoc"><h2>🎯 Nhiệm vụ</h2><div class="luoi-nhiem-vu">${bangNhiemVu()}</div></article>
       <article class="the buoc"><h2>🏅 Huy hiệu</h2><div class="luoi-huy-hieu">${hh}</div></article>
       <article class="the buoc"><h2>🎞️ Kết thúc đã mở</h2>${khoi}</article>`;
@@ -607,6 +633,7 @@
       thongBao(`${SKIN[luu.skin].icon} Đã đổi sang skin ${SKIN[luu.skin].ten}`);
       manAlbum();
     });
+    ganMaLuu($san, manAlbum);
     const k = document.getElementById("khung-vang");
     if (k) k.onchange = () => { luu.khung = k.checked ? "vang" : ""; ghiLuu(luu); apSkin(); };
     lenDau();
@@ -968,7 +995,7 @@
     const n = document.getElementById("nut-tk");
     if (!n) return;
     const u = TK && TK.nguoiDung();
-    n.textContent = u ? `👤 ${u.ten}${trangThaiDongBo === "loi" ? " ⚠️" : ""}` : "👤 Đăng nhập";
+    n.textContent = u ? `👤 ${u.ten}${trangThaiDongBo === "loi" ? " ⚠️" : ""}` : TK && TK.coSan() ? "👤 Đăng nhập" : "💾 Mã lưu";
     n.classList.toggle("da-dang-nhap", !!u);
   }
 
@@ -991,10 +1018,10 @@
     const u = TK && TK.nguoiDung();
     let than;
     if (!TK || !TK.coSan()) {
-      than = `<h2 id="hop-tieu-de">👤 Tài khoản</h2>
-        <p>Tài khoản <b>chưa được bật</b> trên trang này. Hiện tiến độ đang lưu trên trình duyệt của máy bạn.</p>
-        <p class="ghi-chu">Người quản lí trang cần cấu hình Firebase theo file <b>HUONG-DAN-FIREBASE.md</b>.</p>
-        <div class="hang-nut"><button class="nut" data-dong>Đóng</button></div>`;
+      than = `<h2 id="hop-tieu-de">💾 Mã lưu game</h2>
+        <p style="margin-top:0">Tiến độ đang được lưu trên trình duyệt của máy này – tải lại trang không mất. Muốn chơi tiếp ở máy khác thì dùng mã lưu.</p>
+        ${htmlMaLuu()}
+        <div class="hang-nut"><button class="nut phu" data-dong>Đóng</button></div>`;
     } else if (u) {
       const hc = huyChuong();
       than = `<h2 id="hop-tieu-de">👤 ${esc(u.ten)}</h2>
@@ -1020,6 +1047,7 @@
     }
     hop.innerHTML = `<div class="hop" role="dialog" aria-modal="true" aria-labelledby="hop-tieu-de">${batBuoc ? "" : `<button class="hop-dong" data-dong aria-label="Đóng">✕</button>`}${than}</div>`;
     hop.querySelectorAll("[data-dong]").forEach(b => b.onclick = dongHopTK);
+    ganMaLuu(hop, () => { dongHopTK(); if (manHienTai !== "choi") den(manHienTai); });
     hop.querySelectorAll("[data-che]").forEach(b => b.onclick = () => moHopTK(b.dataset.che, batBuoc));
     const khach = hop.querySelector("#tk-khach");
     if (khach) khach.onclick = () => { try { sessionStorage.setItem(KHOA_KHACH, "1"); } catch (e) { /* bỏ qua */ } dongHopTK(); };
@@ -1085,6 +1113,14 @@
   capNhatNutTK();
   if (TK) TK.khoiDong(khiDoiTaiKhoan);
   document.getElementById("ve-trang-chu").onclick = () => den("chon");
+
+  /* Mở link dạng …/#ma=GS1-… là tự nhập mã lưu (không bao giờ làm mất đồ đang có) */
+  const maTrenLink = decodeURIComponent((location.hash.match(/[#&]ma=([^&]+)/) || [])[1] || "");
+  if (maTrenLink) {
+    try { nhapMa(maTrenLink); thongBao("📥 Đã nhập mã lưu từ đường link!"); }
+    catch (err) { thongBao("⚠️ " + err.message); }
+    history.replaceState(null, "", location.pathname + location.search);
+  }
 
   manChon();
 })();

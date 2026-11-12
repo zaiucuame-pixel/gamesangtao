@@ -88,6 +88,19 @@
     return ds[buoc % ds.length];
   };
 
+  /* Những kết thúc có thể đạt được của một nhân vật ở một chế độ (đi thử mọi đường) */
+  L.ketThucCoThe = function (nv, v, cd, MR) {
+    const ds = L.danhSachCanh(nv, cd, MR), out = new Set();
+    (function di(i, t) {
+      if (i === ds.length) { const e = L.ketThuc(t, nv, v, cd, MR); if (e) out.add(e.id); return; }
+      const c = ds[i];
+      if (c.luaChon) c.luaChon.forEach(l => { const t2 = { ...t, co: [...(t.co || [])] }; L.apDung(t2, nv, l.hieuUng, MR, l.dat); di(i + 1, t2); });
+      else if (c.loai === "cauHoi") { const t2 = { ...t }; L.apDung(t2, nv, c.thuong, MR); di(i + 1, t2); di(i + 1, { ...t }); }
+      else di(i + 1, t);
+    })(0, L.trangThaiDau(nv, MR));
+    return MR.ketThuc.filter(e => out.has(e.id));
+  };
+
   if (typeof module !== "undefined" && module.exports) module.exports = L;
   else goc.LOGIC = L;
 })(this);

@@ -16,6 +16,20 @@ Số liệu: Bảng 4 SGK – Thu nhập bình quân đầu người một thán
 
 Mỗi nhân vật có **tâm lý riêng** (hoàn cảnh, ước mơ, nỗi lo) và chỉ số 💭 tâm trạng; lựa chọn dẫn tới nhiều **kết thúc** khác nhau, lưu trong 📔 Album. Hoàn thành **🎯 nhiệm vụ** (vd. 6/6 câu chuyện) để nhận huy hiệu và **skin giao diện** (Đồng lúa chín, Phố cổ về đêm, Biển miền Trung, Hoa ban Tây Bắc, khung chân dung vàng). Có 3 **🔮 kết thúc bí mật** chỉ mở khi đi đúng tổ hợp lựa chọn đặc biệt, thưởng skin 💙 Tuyến đầu chống dịch, 🎄 Giáng sinh, 🎃 Halloween.
 
+## Mã lưu game
+
+Không cần tài khoản: vào **📔 Album → 💾 Mã lưu game** (hoặc nút **💾 Mã lưu** trên thanh menu) để lấy một mã ngắn chứa huy chương, skin, album. Sang máy khác, dán mã vào ô *Nhập mã* là lấy lại đủ. Nhập mã không bao giờ làm mất đồ đang có (chỉ gộp thêm).
+
+**Mã giới thiệu "đủ đồ"** (mở hết kết thúc, huy hiệu, skin – dùng để trình diễn game):
+
+```
+GS1-39FW-ZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZR3-D3XZ-6
+```
+
+Hoặc mở thẳng link: https://zaiucuame-pixel.github.io/gamesangtao/#ma=GS1-39FW-ZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZR3-D3XZ-6
+
+> Mã gắn với danh sách kết thúc/phiếu/skin hiện tại. Nếu thêm kết thúc mới, bộ kiểm tra sẽ báo mã trên hết hạn – tạo lại mã và cập nhật README.
+
 ## Tài khoản
 
 Người chơi đăng ký bằng **tên đăng nhập + mật khẩu** (không cần email). Huy chương, skin, album được lưu trên tài khoản qua **Firebase**, đăng nhập ở máy nào cũng còn. Cách bật: xem `HUONG-DAN-FIREBASE.md`. Khi chưa cấu hình Firebase, game vẫn chạy và lưu tiến độ trên trình duyệt.
@@ -29,6 +43,7 @@ game.js         logic game
 noi-dung.js     nội dung chế độ Bài học + số liệu SGK
 mo-rong.js      tâm lý nhân vật, sự kiện có thật, chế độ Thời cuộc, các kết thúc
 logic.js        phần tính toán dùng chung (tâm trạng, kết thúc) – game và bộ kiểm tra cùng dùng
+ma-luu.js       mã lưu game (chép tiến độ sang máy khác, không cần tài khoản)
 tai-khoan.js    đăng ký/đăng nhập, đồng bộ tiến độ (Firebase hoặc máy chủ giả lập)
 firebase-config.js  cấu hình Firebase (để null = chưa bật tài khoản)
 firestore.rules luật bảo mật Firestore
@@ -52,6 +67,7 @@ bash kiem-tra/chay.sh
 - `kiem-tra/kiem-tra.js` (chỉ cần Node): số liệu đúng Bảng 4 SGK; sự kiện đúng năm, đúng vùng, đúng con số và nguồn đã kiểm chứng; không "lệch thời gian" (nhắc COVID trước 2020, nhắc năm chưa tới…); chế độ Bài học không lẫn biến cố; không có lựa chọn "hiển nhiên" hơn hẳn mọi mặt; mô phỏng **mọi** đường chơi để chắc chắn chỉ số hợp lý và kết thúc đủ đa dạng.
 - `kiem-tra/tham-my.py` (cần Playwright): đo độ tương phản chữ/nền theo chuẩn WCAG trên cả 8 skin, mọi màn hình; `--anh THU_MUC` để chụp ảnh so sánh.
 - `kiem-tra/tai-khoan.py` (cần Playwright): đăng ký, nhập sai, kiếm skin, tải lại, đăng xuất, đăng nhập ở máy khác, chơi thử rồi mới tạo tài khoản, giáo viên xoá máy dùng chung – chạy trên máy chủ giả lập.
+- `kiem-tra/ma-luu.py` (cần Playwright): lấy mã ở máy này, nhập ở máy khác, nhập sai, mở link mã "đủ đồ".
 - `kiem-tra/choi-thu.py` (cần Playwright): bot chơi thử cả 2 chế độ × 6 nhân vật trên khung điện thoại và máy tính, báo lỗi JavaScript, ảnh hỏng, tràn màn hình.
 
 Muốn thêm sự kiện mới: thêm vào `suKien` trong `mo-rong.js` **và** vào danh sách `SU_THAT` trong `kiem-tra/kiem-tra.js` (kèm nguồn đã đọc), nếu không bộ kiểm tra sẽ báo lỗi.

@@ -507,3 +507,14 @@ body[data-skin] .chon-che-do .che-do.dang-chon { background: var(--nhat); }
   body { background: #fff; }
   .the { box-shadow: none; border: 0; }
 }
+
+/* ---------- Mã lưu game ---------- */
+.ma-luu { display: grid; gap: 10px; }
+.ma-hang { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; }
+.ma-hien { flex: 1 1 220px; min-width: 0; font: 700 16px/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: .04em; background: #f6f1e6; color: #1d2340; border: 2px dashed var(--vien); border-radius: 12px;
+  padding: 10px 12px; overflow-wrap: anywhere; user-select: all; }
+.ma-hang input { flex: 1 1 220px; min-width: 0; font: 600 15px ui-monospace, Menlo, Consolas, monospace; text-transform: uppercase;
+  padding: 10px 12px; border: 2px solid var(--vien); border-radius: 12px; background: #fff; color: #1d2340; }
+.ma-luu .tk-loi:empty { display: none; }
+.ma-hang input::placeholder { text-transform: none; }

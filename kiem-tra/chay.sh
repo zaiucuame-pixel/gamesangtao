@@ -11,4 +11,7 @@ echo "=== THẨM MỸ SKIN (độ tương phản) ==="
 python3 kiem-tra/tham-my.py || exit 1
 echo
 echo "=== TÀI KHOẢN (máy chủ giả lập) ==="
-python3 kiem-tra/tai-khoan.py
+python3 kiem-tra/tai-khoan.py || exit 1
+echo
+echo "=== MÃ LƯU GAME ==="
+python3 kiem-tra/ma-luu.py
