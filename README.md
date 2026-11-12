@@ -29,6 +29,7 @@ GS1-39FW-ZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZR3-D3XZ-6
 Hoặc mở thẳng link: https://zaiucuame-pixel.github.io/gamesangtao/#ma=GS1-39FW-ZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZR3-D3XZ-6
 
 > Mã gắn với danh sách kết thúc/phiếu/skin hiện tại. Nếu thêm kết thúc mới, bộ kiểm tra sẽ báo mã trên hết hạn – tạo lại mã và cập nhật README.
+Mỗi skin có một **✨ năng lực đặc biệt** (ghi trong Tủ đồ), có tác dụng khi mặc skin đó lúc bắt đầu câu chuyện: 🌾 Mùa bội thu (+3 🎓 mỗi câu đúng), 🏮 Đèn lồng soi đường (loại 1 đáp án sai), 🌊 Sóng vỗ về (tâm trạng bớt giảm 3), 🌸 Hương ban quê nhà (+10 🏡 lúc đầu), 💙 Lá chắn tuyến đầu (sai được chọn lại, không tính Thông thái), 🎄 Hộp quà may mắn (câu đúng đầu tiên thưởng ×2), 🎃 Mắt cú đêm (nhìn trước tác động của lựa chọn).
 
 ## Tài khoản
 

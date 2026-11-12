@@ -38,6 +38,13 @@ def choi(pg, nv, che_do, rng):
                 loi.append(f"{ten}: kẹt ở bước {buoc} – không có nút nào để bấm")
                 return
             rng.choice(nut).click()
+            for _ in range(4):   # 💙 Lá chắn tuyến đầu: sai thì được chọn lại
+                if pg.query_selector("#nut-tiep"):
+                    break
+                con = pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")
+                if not con:
+                    break
+                rng.choice(con).click()
         if not pg.query_selector(".tam-ly-nghi") and not pg.query_selector(".ket-qua .goc-dia-li"):
             loi.append(f"{ten}: bước {buoc} không hiện suy nghĩ nhân vật hay Góc Địa lí")
         chu = pg.inner_text("#nut-tiep")
@@ -67,6 +74,8 @@ def choi_bi_mat(pg, nv, che_do, uu_tien, skin, ten):
             nut = pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")
             chon = next((b for b in nut for u in uu_tien if u in b.inner_text()), nut[0])
             chon.click()
+            while not pg.query_selector("#nut-tiep"):   # 💙 lá chắn: chọn lại
+                pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")[0].click()
         chu = pg.inner_text("#nut-tiep"); pg.click("#nut-tiep")
         if "hồ sơ" in chu.lower():
             break
@@ -81,6 +90,82 @@ def choi_bi_mat(pg, nv, che_do, uu_tien, skin, ten):
         if pg.evaluate("document.body.dataset.skin") != skin:
             loi.append(f"{ten}: bấm skin {skin} nhưng giao diện không đổi")
         kiem_tran_ngang(pg, f"{ten} – Tủ đồ với skin {skin}")
+
+def mac_skin(pg, skin):
+    """Mở khoá mọi skin (giả lập đã làm xong nhiệm vụ) rồi mặc skin cần thử."""
+    pg.evaluate("""s => { const k = "gamesangtao-v1"; const d = JSON.parse(localStorage.getItem(k) || "{}");
+        d.huyHieu = Object.assign(d.huyHieu || {}, {"du-6-vung":1,"thoi-cuoc":1,"uoc-mo":1,"suu-tam":1});
+        d.album = Object.assign(d.album || {}, {"minh:nguoi-hung":1,"hhen:qua-mua-dong":1,"ut:dem-rung-duoc":1});
+        d.skin = s; localStorage.setItem(k, JSON.stringify(d)); }""", skin)
+    pg.reload()
+
+def choi_nang_luc(pg, skin, nv, che_do):
+    """Chơi một lượt với skin; dùng năng lực chủ động ngay khi có. Trả về các thông báo năng lực."""
+    ten = f"[năng lực {skin}] {nv}/{che_do}"
+    bao, ket = [], {"loai": 0, "loai_sai": 0, "xem_truoc": 0, "chon_lai": 0, "gan_dau": None}
+    pg.click(".menu [data-den=chon]")
+    pg.click(f"[data-che-do={che_do}]"); pg.click(f"[data-nv={nv}]")
+    if skin != "mac-dinh" and not pg.query_selector(".nl-thanh"):
+        loi.append(f"{ten}: màn giới thiệu không báo năng lực của skin")
+    pg.click("#nut-di")
+    ket["gan_dau"] = int(pg.inner_text("#cs-gan"))
+    for _ in range(30):
+        cau_hoi = pg.query_selector(".canh-than > p.mo-ta > b") is not None and not pg.query_selector("#nut-ghi")
+        if pg.query_selector("#nut-nl"):
+            pg.click("#nut-nl")
+            ket["loai"] += len(pg.query_selector_all(".lua-chon.bi-loai"))
+            ket["xem_truoc"] += len(pg.query_selector_all(".lua-chon .xem-truoc"))
+            if pg.query_selector("#nut-nl"):
+                loi.append(f"{ten}: dùng năng lực xong nút vẫn còn")
+        if pg.query_selector("#nut-ghi"):
+            pg.click("#nut-ghi")
+        else:
+            pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")[0].click()
+            while not pg.query_selector("#nut-tiep"):
+                ket["chon_lai"] += 1
+                con = pg.query_selector_all(".luoi-chon .lua-chon:not([disabled])")
+                if not con:
+                    loi.append(f"{ten}: kẹt sau khi lá chắn đỡ"); return bao, ket
+                con[0].click()
+        if pg.query_selector(".lua-chon.bi-loai.dung"):
+            ket["loai_sai"] += 1
+        bao += [e.inner_text() for e in pg.query_selector_all(".ket-qua .nl-bao")]
+        chu = pg.inner_text("#nut-tiep"); pg.click("#nut-tiep")
+        if "hồ sơ" in chu.lower():
+            break
+    if not pg.query_selector(".ket-thuc"):
+        loi.append(f"{ten}: không ra kết thúc")
+    kiem_tran_ngang(pg, ten)
+    return bao, ket
+
+def kiem_nang_luc(pg):
+    goc_gan = {}
+    for skin in ["mac-dinh", "lua-chin", "pho-co", "bien", "hoa-ban", "chong-dich", "giang-sinh", "halloween"]:
+        mac_skin(pg, skin)
+        pg.click(".menu [data-den=album]")
+        if skin != "mac-dinh" and not pg.query_selector(f".o-skin[data-skin={skin}] .nl-o b"):
+            loi.append(f"Tủ đồ không ghi năng lực của skin {skin}")
+        tong_bao, tong = [], {"loai": 0, "loai_sai": 0, "xem_truoc": 0, "chon_lai": 0}
+        for nv in NV:
+            bao, ket = choi_nang_luc(pg, skin, nv, "baiHoc")
+            tong_bao += bao
+            for k in tong: tong[k] += ket[k]
+            if skin == "mac-dinh": goc_gan[nv] = ket["gan_dau"]
+            elif skin == "hoa-ban" and ket["gan_dau"] != min(100, goc_gan[nv] + 10):
+                loi.append(f"[năng lực hoa-ban] {nv}: gắn bó lúc đầu {ket['gan_dau']}, mong đợi {goc_gan[nv] + 10}")
+        chu = " ".join(tong_bao)
+        mong = {
+            "lua-chin": ("Mùa bội thu" in chu, "không lần nào thấy thưởng Mùa bội thu"),
+            "pho-co": (tong["loai"] == len(NV) and tong["loai_sai"] == 0, f"đèn lồng loại {tong['loai']} đáp án (mong {len(NV)}, mỗi lượt 1), loại nhầm đáp án đúng {tong['loai_sai']} lần"),
+            "bien": ("Sóng vỗ về" in chu, "không lần nào thấy Sóng vỗ về đỡ tâm trạng"),
+            "chong-dich": (tong["chon_lai"] <= 6, f"được chọn lại {tong['chon_lai']} lần trong 6 lượt (tối đa 1 lần/lượt)"),
+            "giang-sinh": (1 <= chu.count("Hộp quà") <= 6, f"hộp quà mở {chu.count('Hộp quà')} lần trong 6 lượt"),
+            "halloween": (tong["xem_truoc"] > 0, "mắt cú đêm không hiện tác động nào"),
+            "mac-dinh": (not chu and tong["loai"] == 0 and tong["xem_truoc"] == 0, "skin mặc định lại có năng lực"),
+        }
+        if skin in mong and not mong[skin][0]:
+            loi.append(f"[năng lực {skin}] {mong[skin][1]}")
+        print(f"  · năng lực {skin:11} {len(tong_bao)} thông báo · {tong}")
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -140,6 +225,7 @@ with sync_playwright() as p:
         mau = pg.evaluate("getComputedStyle(document.querySelector('main > h2')).color")
         if mau.startswith("rgb(29, 36, 64)"):
             loi.append(f"[{ten_mh}] skin tối nhưng tiêu đề vẫn chữ tối – khó đọc")
+        kiem_nang_luc(pg)
         pg.close()
     b.close()
 

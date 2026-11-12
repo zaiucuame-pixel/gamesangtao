@@ -176,8 +176,10 @@
     tt = Object.assign(L.trangThaiDau(nv, MR), {
       nv, v: VUNG[nv.vung], cheDo,
       ds: L.danhSachCanh(nv, cheDo, MR),
-      buoc: -1, nghe: "", phieu: [], dungCau: 0, tongCau: 0, lichSu: []
+      buoc: -1, nghe: "", phieu: [], dungCau: 0, tongCau: 0, lichSu: [],
+      skin: document.body.dataset.skin || "mac-dinh", daDungNL: false, thuLaiCau: -1
     });
+    if (tt.skin === "hoa-ban") tt.gan = L.kep(tt.gan + 10, 0, 100);
     manGioiThieu();
   }
 
@@ -202,6 +204,7 @@
           <div class="o-tam-ly"><b>🌟 Ước mơ</b>${esc(tl.uocMo.chu)}</div>
           <div class="o-tam-ly"><b>😟 Nỗi lo</b>${esc(tl.noiLo)}</div>
         </div>
+        ${nangLuc() ? `<div class="canh-than" style="padding-top:0">${thanhNangLuc()}</div>` : ""}
         ${cheDo === "thoiCuoc" ? `<div class="canh-than" style="padding-top:0"><p class="ghi-chu" style="margin:0">📰 Năm 2019, ${esc(nv.ten)} vừa tròn 18 tuổi. Hành trình kéo dài đến năm 2024, đi qua 3 sự kiện <b>có thật</b> (có ghi nguồn). Thu nhập của nhân vật là <b>số mô phỏng</b> cho game, không phải số liệu thống kê.</p></div>` : ""}
         <div class="canh-than" style="padding-top:0">
           <button class="nut" id="nut-di">${cheDo === "thoiCuoc" ? "Bắt đầu năm 2019 →" : "Bắt đầu năm thứ nhất →"}</button>
@@ -265,6 +268,11 @@
       than = `<button class="nut toi" id="nut-ghi">${tt.nv.chinh ? "📋 Ghi vào sổ điều tra" : "Đọc xong"}</button>`;
     }
     const moTa = L.moTa(c, tt);
+    let nutNL = "";
+    if (!tt.daDungNL && c.loai === "cauHoi" && tt.skin === "pho-co")
+      nutNL = `<button class="nut phu nut-nl" id="nut-nl">🏮 Dùng Đèn lồng soi đường: loại 1 đáp án sai</button>`;
+    if (!tt.daDungNL && c.luaChon && tt.skin === "halloween")
+      nutNL = `<button class="nut phu nut-nl" id="nut-nl">🎃 Dùng Mắt cú đêm: nhìn trước tác động</button>`;
 
     $san.innerHTML = `
       ${hud()}
@@ -278,11 +286,32 @@
           ${c.loai === "bienCo" ? tinThoiSu(c) : ""}
           ${moTa ? `<p class="mo-ta">${esc(moTa)}</p>` : ""}
           ${than}
+          ${nutNL ? `<div class="hang-nl">${nutNL}</div>` : ""}
+          ${nangLuc() ? thanhNangLuc() : ""}
           <div id="ket-qua"></div>
         </div>
       </article>`;
     ganNen(document.getElementById("dau-canh"), tt.nv.nen);
 
+    const nutDung = document.getElementById("nut-nl");
+    if (nutDung) nutDung.onclick = () => {
+      tt.daDungNL = true; xoaNutNL();
+      const nutLC = [...$san.querySelectorAll(".lua-chon")];
+      if (tt.skin === "pho-co") {
+        const sai = nutLC.filter((b, j) => j !== c.dung && !b.disabled);
+        const b = sai[Math.floor(Math.random() * sai.length)];
+        if (b) { b.disabled = true; b.classList.add("bi-loai"); }
+        thongBao("🏮 Đèn lồng đã loại bớt 1 đáp án sai");
+      } else {
+        nutLC.forEach((b, j) => {
+          const hu = c.luaChon[j].hieuUng;
+          const chip = chipHieuUng(hu, L.tamTrangDoi(tt.nv, hu, MR));
+          b.insertAdjacentHTML("beforeend", `<span class="xem-truoc">${chip || '<span class="chip">Không đổi chỉ số</span>'}</span>`);
+        });
+        thongBao("🎃 Mắt cú đêm: đã thấy trước tác động");
+      }
+      const th = $san.querySelector(".nl-thanh"); if (th) th.outerHTML = thanhNangLuc();
+    };
     if (c.luaChon) {
       $san.querySelectorAll(".lua-chon").forEach(b => b.onclick = () => chon(c, +b.dataset.i));
     } else if (c.loai === "cauHoi") {
@@ -300,11 +329,17 @@
   function chon(c, i) {
     const l = c.luaChon[i];
     $san.querySelectorAll(".lua-chon").forEach((b, j) => { b.disabled = true; if (j === i) b.classList.add("da-chon"); });
-    const dm = L.apDung(tt, tt.nv, l.hieuUng, MR, l.dat);
+    xoaNutNL();
+    let dm = L.apDung(tt, tt.nv, l.hieuUng, MR, l.dat), nl = "";
+    if (dm < 0 && tt.skin === "bien") {
+      const bu = Math.min(3, -dm);
+      tt.tamTrang = L.kep(tt.tamTrang + bu, 0, 100); dm += bu;
+      nl = `🌊 Sóng vỗ về: tâm trạng bớt giảm ${bu} điểm.`;
+    }
     if (l.nghe) tt.nghe = l.nghe;
     tt.lichSu.push({ nam: c.nam, tieuDe: c.tieuDe, chon: l.chu, dm, suKien: c.suKien });
     hienKetQua({
-      loi: l.ketQua, hieuUng: l.hieuUng, dm,
+      loi: l.ketQua, hieuUng: l.hieuUng, dm, nl,
       nghi: l.suyNghi || L.suyNghi(tt.nv, dm, tt.buoc, MR),
       phieu: [c.phieu, l.phieuThem], diaLi: l.diaLi || c.diaLi
     });
@@ -312,18 +347,40 @@
 
   function traLoi(c, i) {
     const dung = i === c.dung;
-    tt.tongCau++;
-    if (dung) tt.dungCau++;
+    const thuLai = tt.thuLaiCau === tt.buoc;
+    xoaNutNL();
+    if (!dung && !thuLai && tt.skin === "chong-dich" && !tt.daDungNL) {
+      // Lá chắn tuyến đầu: đỡ một lần sai, cho chọn lại (câu này không còn tính là "đúng ngay")
+      tt.daDungNL = true; tt.thuLaiCau = tt.buoc; tt.tongCau++;
+      const b = $san.querySelectorAll(".lua-chon")[i];
+      b.disabled = true; b.classList.add("sai");
+      document.getElementById("ket-qua").innerHTML = `<div class="ket-qua"><p class="nl-bao">💙 <b>Lá chắn tuyến đầu</b> đã đỡ cho bạn! Đáp án này chưa đúng – hãy chọn lại.</p></div>`;
+      const th = $san.querySelector(".nl-thanh"); if (th) th.outerHTML = thanhNangLuc();
+      thongBao("💙 Lá chắn tuyến đầu: được chọn lại!");
+      return;
+    }
+    if (!thuLai) tt.tongCau++;
+    if (dung && !thuLai) tt.dungCau++;
     $san.querySelectorAll(".lua-chon").forEach((b, j) => {
       b.disabled = true;
       if (j === c.dung) b.classList.add("dung");
       else if (j === i) b.classList.add("sai");
     });
-    const dm = dung ? L.apDung(tt, tt.nv, c.thuong, MR) : 0;
-    tt.lichSu.push({ nam: c.nam, tieuDe: c.tieuDe, chon: dung ? "Trả lời đúng ✅" : "Trả lời chưa đúng" });
+    let thuong = dung ? c.thuong : null;
+    const nl = [];
+    if (dung && tt.skin === "giang-sinh" && !tt.daDungNL) {
+      tt.daDungNL = true; thuong = nhanHU(thuong, 2);
+      nl.push("🎄 Hộp quà may mắn: phần thưởng câu này được nhân đôi!");
+    }
+    if (dung && tt.skin === "lua-chin") {
+      thuong = Object.assign({}, thuong, { tayNghe: ((thuong || {}).tayNghe || 0) + 3 });
+      nl.push("🌾 Mùa bội thu: thêm +3 🎓 tay nghề.");
+    }
+    const dm = dung ? L.apDung(tt, tt.nv, thuong, MR) : 0;
+    tt.lichSu.push({ nam: c.nam, tieuDe: c.tieuDe, chon: dung ? (thuLai ? "Trả lời đúng ở lần thứ hai 💙" : "Trả lời đúng ✅") : "Trả lời chưa đúng" });
     hienKetQua({
-      loi: dung ? "🎉 Chính xác! Bạn được thưởng." : "😅 Chưa đúng rồi. Xem giải thích nhé:",
-      hieuUng: dung ? c.thuong : null, dm,
+      loi: dung ? (thuLai ? "✅ Lần này đúng rồi! Bạn vẫn được thưởng (câu này không tính vào nhiệm vụ Thông thái)." : "🎉 Chính xác! Bạn được thưởng.") : "😅 Chưa đúng rồi. Xem giải thích nhé:",
+      hieuUng: thuong, dm, nl: nl.join(" "),
       phieu: [c.phieu],
       diaLi: [c.giaiThich, c.diaLi].filter(Boolean).join(" ")
     });
@@ -337,7 +394,7 @@
     return ds.length ? `<div class="chip-hang">${ds.join("")}</div>` : "";
   }
 
-  function hienKetQua({ loi, hieuUng, dm, nghi, phieu, diaLi }) {
+  function hienKetQua({ loi, hieuUng, dm, nl, nghi, phieu, diaLi }) {
     const moi = (phieu || []).filter(Boolean);
     moi.forEach(p => tt.phieu.push(p));
     const phieuHtml = (tt.nv.chinh && moi.length)
@@ -348,6 +405,7 @@
       <div class="ket-qua">
         ${loi ? `<p class="loi">${esc(loi)}</p>` : ""}
         ${chipHieuUng(hieuUng, dm)}
+        ${nl ? `<p class="nl-bao">${esc(nl)}</p>` : ""}
         ${nghi ? `<div class="tam-ly-nghi">${chanDung(tt.nv, "nho")}<span>💭 <i>“${esc(nghi)}”</i></span></div>` : ""}
         ${diaLi ? `<div class="goc-dia-li"><b>📍 Góc Địa lí:</b> ${esc(diaLi)}${anhThat(tt.ds[tt.buoc].anh)}</div>` : ""}
         ${phieuHtml}
@@ -359,6 +417,7 @@
     thay("cs-tam", `${mat(tt.tamTrang)} ${tt.tamTrang}`); thay("cs-phieu", tt.phieu.length);
     const thanh = $san.querySelectorAll(".hud .thanh i");
     [tt.tayNghe, tt.gan, tt.tamTrang].forEach((g, k) => { if (thanh[k]) thanh[k].style.width = g + "%"; });
+    const th = $san.querySelector(".nl-thanh"); if (th) th.outerHTML = thanhNangLuc();
     document.getElementById("nut-tiep").onclick = canhTiep;
     document.getElementById("ket-qua").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
@@ -404,14 +463,22 @@
   }
   const SKIN = {
     /* hat: hạt trang trí rơi/bay trên nền; len: bay lên thay vì rơi xuống */
+    /* nl: năng lực đặc biệt khi mặc skin này lúc bắt đầu chơi; motLan: chỉ dùng 1 lần mỗi lượt */
     "mac-dinh": { icon: "🧭", ten: "Mặc định", hat: [] },
-    "lua-chin": { icon: "🌾", ten: "Đồng lúa chín", hat: ["🌾", "🍃", "🌾"] },
-    "pho-co": { icon: "🏮", ten: "Phố cổ về đêm", hat: ["🏮", "✨", "🏮"], len: true },
-    "bien": { icon: "🌊", ten: "Biển miền Trung", hat: ["🫧", "🫧", "🐚"], len: true },
-    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc", hat: ["🌸", "🌸", "🤍"] },
-    "chong-dich": { icon: "💙", ten: "Tuyến đầu chống dịch", hat: ["💙", "✨", "🤍"], len: true },
-    "giang-sinh": { icon: "🎄", ten: "Giáng sinh", hat: ["❄️", "❄️", "⭐", "❄️"] },
-    "halloween": { icon: "🎃", ten: "Halloween", hat: ["🦇", "🍂", "🦇", "🕸️"] }
+    "lua-chin": { icon: "🌾", ten: "Đồng lúa chín", hat: ["🌾", "🍃", "🌾"],
+      nl: { ten: "Mùa bội thu", mo: "Mỗi câu hỏi trả lời đúng được thêm +3 🎓 tay nghề" } },
+    "pho-co": { icon: "🏮", ten: "Phố cổ về đêm", hat: ["🏮", "✨", "🏮"], len: true,
+      nl: { ten: "Đèn lồng soi đường", mo: "Loại bỏ 1 đáp án sai trong một câu hỏi", motLan: true } },
+    "bien": { icon: "🌊", ten: "Biển miền Trung", hat: ["🫧", "🫧", "🐚"], len: true,
+      nl: { ten: "Sóng vỗ về", mo: "Mỗi lần tâm trạng đi xuống, bớt giảm 3 điểm 💭" } },
+    "hoa-ban": { icon: "🌸", ten: "Hoa ban Tây Bắc", hat: ["🌸", "🌸", "🤍"],
+      nl: { ten: "Hương ban quê nhà", mo: "Bắt đầu với +10 🏡 gắn bó quê hương" } },
+    "chong-dich": { icon: "💙", ten: "Tuyến đầu chống dịch", hat: ["💙", "✨", "🤍"], len: true,
+      nl: { ten: "Lá chắn tuyến đầu", mo: "Trả lời sai một câu hỏi thì được chọn lại", motLan: true } },
+    "giang-sinh": { icon: "🎄", ten: "Giáng sinh", hat: ["❄️", "❄️", "⭐", "❄️"],
+      nl: { ten: "Hộp quà may mắn", mo: "Câu hỏi đầu tiên trả lời đúng được thưởng gấp đôi", motLan: true } },
+    "halloween": { icon: "🎃", ten: "Halloween", hat: ["🦇", "🍂", "🦇", "🕸️"],
+      nl: { ten: "Mắt cú đêm", mo: "Nhìn trước tác động của các lựa chọn trong một tình huống", motLan: true } }
   };
   /* Mã lưu game: thứ tự huy hiệu và skin ở trên KHÔNG được đổi, nếu không mã cũ sẽ hỏng */
   const MA = window.MA_LUU.tao(ND, MR, L, { huyHieu: NHIEM_VU.map(n => n.id), skin: Object.keys(SKIN) });
@@ -447,6 +514,15 @@
     };
   }
 
+  const nangLuc = () => tt && (SKIN[tt.skin] || {}).nl;
+  const nhanHU = (hu, k) => Object.fromEntries(Object.entries(hu || {}).map(([a, b]) => [a, typeof b === "number" ? b * k : b]));
+  function thanhNangLuc() {
+    const n = nangLuc();
+    if (!n) return "";
+    const tt2 = n.motLan ? (tt.daDungNL ? " · <i>đã dùng</i>" : " · còn 1 lần") : "";
+    return `<div class="nl-thanh">✨ <b>${SKIN[tt.skin].icon} ${esc(n.ten)}:</b> ${esc(n.mo)}${tt2}</div>`;
+  }
+  function xoaNutNL() { const b = document.getElementById("nut-nl"); if (b) b.remove(); }
   const phanThuong = nvu => nvu.skin ? `skin ${SKIN[nvu.skin].icon} ${SKIN[nvu.skin].ten}` : nvu.khung ? "✨ khung chân dung vàng" : "🏅 huy hiệu đặc biệt";
 
   function apSkin() {
@@ -594,6 +670,7 @@
       return `<button class="o-skin ${mo ? "" : "khoa"} ${dang ? "dang-dung" : ""}" data-skin="${id}" ${mo ? "" : "disabled"}>
         <span class="mau-skin" data-skin="${id}"><i class="mx-dau"></i><i class="mx-bia"></i><i class="mx-chu"></i><i class="mx-nut"></i></span>
         <b>${s.icon} ${esc(s.ten)}</b>
+        ${s.nl ? `<span class="nl-o">✨ <b>${esc(s.nl.ten)}</b>: ${esc(s.nl.mo)}${s.nl.motLan ? " (1 lần/lượt)" : ""}</span>` : `<span class="nl-o">Không có năng lực đặc biệt</span>`}
         <small>${dang ? "✔ Đang dùng" : mo ? "Bấm để dùng" : nvu ? "🔒 " + esc(nvu.ten) : "🔮 Kết thúc bí mật – " + esc((BI_MAT.find(k => k.skin === id) || {}).goiY || "")}</small>
       </button>`;
     }).join("");
@@ -618,6 +695,7 @@
         <p>Bạn đã mở khoá <b>${mo}/${tong}</b> kết thúc. Hoàn thành nhiệm vụ để nhận huy hiệu và skin giao diện mới!</p>
       </section>
       <article class="the"><h2>🎨 Tủ đồ – Skin giao diện</h2>
+        <p class="ghi-chu" style="margin-top:0">✨ Mỗi skin có một <b>năng lực đặc biệt</b>, có tác dụng khi bạn <b>mặc skin đó lúc bắt đầu</b> một câu chuyện.</p>
         <div class="luoi-skin">${skinHtml}</div>
         <label class="chon-khung ${coKhung ? "" : "khoa"}">
           <input type="checkbox" id="khung-vang" ${luu.khung === "vang" ? "checked" : ""} ${coKhung ? "" : "disabled"}>

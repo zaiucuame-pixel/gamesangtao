@@ -518,3 +518,13 @@ body[data-skin] .chon-che-do .che-do.dang-chon { background: var(--nhat); }
   padding: 10px 12px; border: 2px solid var(--vien); border-radius: 12px; background: #fff; color: #1d2340; }
 .ma-luu .tk-loi:empty { display: none; }
 .ma-hang input::placeholder { text-transform: none; }
+/* ===== Năng lực đặc biệt của skin ===== */
+.nl-thanh { font-size: 13px; color: var(--chu); background: var(--nhat, #f6f1e6); border: 2px dashed var(--vang-dam, #c9962a); border-radius: 12px; padding: 8px 12px; margin: 12px 0 0; }
+.nl-thanh i { color: var(--chu-nhat); }
+.hang-nl { margin-top: 10px; }
+.nut-nl { font-size: 14px; padding: 8px 14px; }
+.nl-bao { font-size: 14px; font-weight: 700; color: var(--chu); background: var(--nhat, #f6f1e6); border-left: 4px solid var(--vang-dam, #c9962a); border-radius: 8px; padding: 6px 10px; margin: 0 0 10px; }
+.lua-chon.bi-loai { opacity: .4; text-decoration: line-through; }
+.lua-chon .xem-truoc { display: block; margin-top: 6px; }
+.lua-chon .xem-truoc .chip-hang { margin: 0; }
+.o-skin .nl-o { font-size: 12px; color: var(--chu); line-height: 1.35; }
